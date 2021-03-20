@@ -1,9 +1,9 @@
 package com.shootingstartracking;
 
-import com.google.inject.Provides;
 import javax.inject.Inject;
 import javax.swing.*;
 
+import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.events.WidgetLoaded;
@@ -19,11 +19,12 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.util.ImageUtil;
 
 import java.awt.image.BufferedImage;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Slf4j
 @PluginDescriptor(
@@ -40,6 +41,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 	@Inject
 	private ClientToolbar clientToolbar;
 
+	@Inject
+	private ShootingStarTrackingConfig config;
+
 	private ShootingStarTrackingPanel panel;
 
 	private NavigationButton navButton;
@@ -53,15 +57,24 @@ public class ShootingStarTrackingPlugin extends Plugin
 		}
 	}
 
+	@Provides
+	ShootingStarTrackingConfig getConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(ShootingStarTrackingConfig.class);
+	}
+
 	private void extractStarInformation()
 	{
 		clientThread.invokeLater(() ->
 		{
 			final Widget widget = client.getWidget(229,1);
+			if (widget == null) {
+				return;
+			}
 			final String[] locations = new String[]{"Misthalin","Desert","Wilderness","Asgarnia","Karamja","Fremennik","Tirannwn","Kandarin","Fossil","Feldip Hills",
 					"Kebos","Kourend","Morytania","Piscatoris"};
+			ZonedDateTime time = ZonedDateTime.now(ZoneId.of("UTC"));
 			String widgetText;
-			Calendar calendar = Calendar.getInstance();
 
 			try{
 				widgetText = widget.getText().replace("<br>"," ");
@@ -91,10 +104,10 @@ public class ShootingStarTrackingPlugin extends Plugin
 					hours = Integer.parseInt(matcher.group(2));
 					mins = Integer.parseInt(matcher.group(3));
 				}
-				calendar.add(Calendar.HOUR,hours);
-				calendar.add(Calendar.MINUTE,mins);
+				time = time.plusHours(hours);
+				time = time.plusMinutes(mins);
 			}
-			addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),calendar.getTime().getTime()));
+			addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),time.toInstant().toEpochMilli()));
 		});
 	}
 
@@ -116,12 +129,11 @@ public class ShootingStarTrackingPlugin extends Plugin
 	public void checkDepletedStars()
 	{
 		List<ShootingStarTrackingData> stars = new ArrayList<>(panel.getStarData());
-		Calendar cal = Calendar.getInstance();
-		long timeMilli = cal.getTime().getTime();
+		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
 
 		for (ShootingStarTrackingData star : panel.getStarData())
 		{
-			if (star.getTime() + 300000 < timeMilli)
+			if (star.getTime() < now.minusMinutes(config.timeTillRemoveConfig()).toInstant().toEpochMilli())
 			{
 				stars.remove(star);
 			}
@@ -133,13 +145,14 @@ public class ShootingStarTrackingPlugin extends Plugin
 	@Override
 	protected void startUp() throws Exception
 	{
-		final BufferedImage icon = ImageUtil.getResourceStreamFromClass(ShootingStarTrackingPlugin.class,"/shooting_star.png");
+		final BufferedImage icon = ImageUtil.loadImageResource(ShootingStarTrackingPlugin.class, "/shooting_star.png");
 		panel = new ShootingStarTrackingPanel();
 
 		navButton = NavigationButton.builder()
 				.tooltip("Shooting Star Tracking")
 				.icon(icon)
 				.panel(panel)
+				.priority(6)
 				.build();
 		clientToolbar.addNavigation(navButton);
 	}

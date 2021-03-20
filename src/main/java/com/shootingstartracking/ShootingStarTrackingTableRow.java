@@ -6,8 +6,11 @@ import net.runelite.client.ui.ColorScheme;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ShootingStarTrackingTableRow extends JPanel {
 
@@ -38,7 +41,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel worldField = new JLabel(starData.getWorld() + "");
-        worldField.setForeground((starData.getTime() > Calendar.getInstance().getTimeInMillis()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
+        worldField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
         panel.add(worldField,BorderLayout.CENTER);
         return panel;
     }
@@ -48,19 +51,20 @@ public class ShootingStarTrackingTableRow extends JPanel {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel locationField = new JLabel(starData.getLocation().getLocation());
-        locationField.setForeground((starData.getTime() > Calendar.getInstance().getTimeInMillis()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
+        locationField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
         panel.add(locationField,BorderLayout.CENTER);
         return panel;
     }
 
     private JPanel buildTimeField()
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        String time = sdf.format(starData.getTime());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+        Instant instant = Instant.ofEpochMilli(starData.getTime());
+        String time = LocalDateTime.ofInstant(instant,ZoneId.systemDefault()).format(dtf);
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel timeField = new JLabel(time);
-        timeField.setForeground((starData.getTime() > Calendar.getInstance().getTimeInMillis()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
+        timeField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
         panel.add(timeField);
         return panel;
     }

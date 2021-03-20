@@ -241,8 +241,17 @@ public class ShootingStarTrackingPanel extends PluginPanel {
     }
 
     private void importDataFromClipboard() throws IOException, UnsupportedFlavorException {
-        String clipboard = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+        String clipboard;
         JsonArray json;
+        try {
+            clipboard = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
+        } catch (UnsupportedFlavorException e) {
+            return;
+        }
+
+        if (clipboard.equals("")) {
+            return;
+        }
         try
         {
             json = new Gson().fromJson(clipboard, JsonArray.class);
