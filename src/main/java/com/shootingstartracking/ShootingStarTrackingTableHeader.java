@@ -19,6 +19,7 @@ public class ShootingStarTrackingTableHeader extends JPanel {
     private static final ImageIcon ARROW_UP;
     private static final ImageIcon HIGHLIGHT_ARROW_UP;
     private static final ImageIcon HIGHLIGHT_ARROW_DOWN;
+    private boolean ordering = false;
     static
     {
         final BufferedImage arrowDown = ImageUtil.loadImageResource(ShootingStarTrackingPlugin.class, "/arrow.png");
@@ -41,12 +42,12 @@ public class ShootingStarTrackingTableHeader extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                textLabel.setForeground(ColorScheme.BRAND_ORANGE);
+                if (!ordering) textLabel.setForeground(ColorScheme.BRAND_ORANGE);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                textLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
+                if (!ordering) textLabel.setForeground(ColorScheme.LIGHT_GRAY_COLOR);
             }
         });
         textLabel.setText(title);
@@ -57,6 +58,7 @@ public class ShootingStarTrackingTableHeader extends JPanel {
     }
     void highlight(boolean on, boolean ascending)
     {
+        ordering = on;
         arrowLabel.setIcon(on ? (ascending ? HIGHLIGHT_ARROW_DOWN : HIGHLIGHT_ARROW_UP) : ARROW_UP);
         textLabel.setForeground(on ? ColorScheme.BRAND_ORANGE : ColorScheme.LIGHT_GRAY_COLOR);
     }

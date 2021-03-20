@@ -2,10 +2,13 @@ package com.shootingstartracking;
 
 import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.FontManager;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -23,13 +26,28 @@ public class ShootingStarTrackingTableRow extends JPanel {
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(2,0,2,0));
 
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                setBackground(getBackground().brighter());
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setBackground(getBackground().darker());
+            }
+        });
+
         JPanel worldField = buildWorldField();
         worldField.setPreferredSize(new Dimension(60,20));
+        worldField.setOpaque(false);
 
         JPanel locationField = buildLocationField();
         locationField.setPreferredSize(new Dimension(50,20));
+        locationField.setOpaque(false);
+
         JPanel timeField = buildTimeField();
         timeField.setPreferredSize(new Dimension(60,20));
+        timeField.setOpaque(false);
 
         add(worldField,BorderLayout.WEST);
         add(locationField,BorderLayout.CENTER);
@@ -41,6 +59,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel worldField = new JLabel(starData.getWorld() + "");
+        worldField.setFont(FontManager.getRunescapeSmallFont());
         worldField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
         panel.add(worldField,BorderLayout.CENTER);
         return panel;
@@ -51,6 +70,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel locationField = new JLabel(starData.getLocation().getLocation());
+        locationField.setFont(FontManager.getRunescapeSmallFont());
         locationField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
         panel.add(locationField,BorderLayout.CENTER);
         return panel;
@@ -64,6 +84,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel timeField = new JLabel(time);
+        timeField.setFont(FontManager.getRunescapeSmallFont());
         timeField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
         panel.add(timeField);
         return panel;

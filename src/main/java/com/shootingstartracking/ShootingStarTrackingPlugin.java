@@ -155,6 +155,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 				.priority(6)
 				.build();
 		clientToolbar.addNavigation(navButton);
+		panel.updateList();
 	}
 
 	@Override

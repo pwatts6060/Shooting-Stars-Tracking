@@ -34,7 +34,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
     @Setter
     private List<ShootingStarTrackingData> starData = new ArrayList<>();
 
-    private Order orderIndex = Order.WORLD;
+    private Order orderIndex = Order.TIME;
     private boolean ascendingOrder = true;
 
     ShootingStarTrackingPanel()
@@ -45,8 +45,10 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         listContainer.setLayout(new GridLayout(0,1));
         add(header);
         add(listContainer);
-        add(exportPanel());
-        add(importPanel());
+        JPanel buttons = new JPanel();
+        buttons.add(importPanel(),BorderLayout.WEST);
+        buttons.add(exportPanel(),BorderLayout.EAST);
+        add(buttons);
     }
 
     private JPanel buildHeader()
@@ -94,6 +96,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
                 orderBy(Order.TIME);
             }
         });
+        timeHeader.highlight(true,ascendingOrder);
 
         header.add(worldHeader,BorderLayout.WEST);
         header.add(locationHeader,BorderLayout.CENTER);
@@ -103,28 +106,37 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
     void updateList()
     {
-        starData.sort((r1,r2) ->
-        {
-            switch (orderIndex)
-            {
-                case WORLD:
-                    return getCompareValue(r1,r2, ShootingStarTrackingData::getWorld);
-                case LOCATION:
-                    return getCompareValue(r1,r2, row ->
-                            row.getLocation().getLocation());
-                case TIME:
-                    return getCompareValue(r1,r2, ShootingStarTrackingData::getTime);
-                default:
-                    return 0;
-            }
-        });
         listContainer.removeAll();
+        if (starData.size() == 0)
+        {
+            JLabel noStarsLabel = new JLabel("Look through a telescope to start tracking stars");
+            noStarsLabel.setFont(FontManager.getRunescapeSmallFont());
+            noStarsLabel.setBorder(new EmptyBorder(5,5,5,5));
+            listContainer.add(noStarsLabel);
+        } else {
+            starData.sort((r1, r2) ->
+            {
+                switch (orderIndex) {
+                    case WORLD:
+                        return getCompareValue(r1, r2, ShootingStarTrackingData::getWorld);
+                    case LOCATION:
+                        return getCompareValue(r1, r2, row ->
+                                row.getLocation().getLocation());
+                    case TIME:
+                        return getCompareValue(r1, r2, ShootingStarTrackingData::getTime);
+                    default:
+                        return 0;
+                }
+            });
 
-        starData.forEach((star) -> {
-            ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(star);
-            r.setComponentPopupMenu(buildRemoveMenu(star));
-            listContainer.add(r);
-        });
+            for (int i = 0; i < starData.size(); i++)
+            {
+                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(starData.get(i));
+                r.setComponentPopupMenu(buildRemoveMenu(starData.get(i)));
+                r.setBackground(i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR :ColorScheme.DARKER_GRAY_COLOR);
+                listContainer.add(r);
+            }
+        }
 
         listContainer.revalidate();
         listContainer.repaint();
