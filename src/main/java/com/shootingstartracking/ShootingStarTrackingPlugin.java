@@ -11,6 +11,7 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.task.Schedule;
@@ -54,6 +55,17 @@ public class ShootingStarTrackingPlugin extends Plugin
 		if (widgetLoaded.getGroupId() == 229)
 		{
 			extractStarInformation();
+		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(final ConfigChanged event)
+	{
+		if (event.getGroup().equals("Shooting Stars Tracking")) {
+			if (event.getKey().equals("displayAsTime")) {
+				panel.setDisplayAsMinutes(config.displayAsMinutes());
+				panel.updateList();
+			}
 		}
 	}
 
@@ -155,6 +167,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 				.priority(6)
 				.build();
 		clientToolbar.addNavigation(navButton);
+		panel.setDisplayAsMinutes(config.displayAsMinutes());
 		panel.updateList();
 	}
 

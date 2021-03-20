@@ -36,6 +36,8 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
     private Order orderIndex = Order.TIME;
     private boolean ascendingOrder = true;
+    @Setter
+    private boolean displayAsMinutes;
 
     ShootingStarTrackingPanel()
     {
@@ -131,7 +133,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
             for (int i = 0; i < starData.size(); i++)
             {
-                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(starData.get(i));
+                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(starData.get(i),displayAsMinutes);
                 r.setComponentPopupMenu(buildRemoveMenu(starData.get(i)));
                 r.setBackground(i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR :ColorScheme.DARKER_GRAY_COLOR);
                 listContainer.add(r);
