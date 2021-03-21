@@ -1,9 +1,6 @@
 package com.shootingstartracking;
 
 import com.google.common.collect.Ordering;
-import com.google.gson.*;
-import lombok.Getter;
-import lombok.Setter;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.DynamicGridLayout;
 import net.runelite.client.ui.FontManager;
@@ -12,13 +9,8 @@ import net.runelite.client.ui.PluginPanel;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -30,25 +22,20 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
     private final JPanel listContainer = new JPanel();
 
-    @Getter
-    @Setter
-    private List<ShootingStarTrackingData> starData = new ArrayList<>();
-
+    private final ShootingStarTrackingPlugin plugin;
     private Order orderIndex = Order.TIME;
     private boolean ascendingOrder = true;
-    @Setter
-    private boolean displayAsMinutes;
 
-    ShootingStarTrackingPanel()
-    {
+    ShootingStarTrackingPanel(ShootingStarTrackingPlugin plugin) {
+        this.plugin = plugin;
         setBorder(null);
-        setLayout(new DynamicGridLayout(0,1));
+        setLayout(new DynamicGridLayout(0, 1));
         JPanel header = buildHeader();
-        listContainer.setLayout(new GridLayout(0,1));
+        listContainer.setLayout(new GridLayout(0, 1));
         add(header);
         add(listContainer);
         JPanel buttons = new JPanel();
-        buttons.add(importPanel(),BorderLayout.WEST);
+        buttons.add(importPanel(), BorderLayout.WEST);
         buttons.add(exportPanel(),BorderLayout.EAST);
         add(buttons);
     }
@@ -106,14 +93,12 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         return header;
     }
 
-    void updateList()
-    {
+    void updateList(List<ShootingStarTrackingData> starData) {
         listContainer.removeAll();
-        if (starData.size() == 0)
-        {
+        if (starData.size() == 0) {
             JLabel noStarsLabel = new JLabel("Look through a telescope to start tracking stars");
             noStarsLabel.setFont(FontManager.getRunescapeSmallFont());
-            noStarsLabel.setBorder(new EmptyBorder(5,5,5,5));
+            noStarsLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
             listContainer.add(noStarsLabel);
         } else {
             starData.sort((r1, r2) ->
@@ -133,7 +118,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
             for (int i = 0; i < starData.size(); i++)
             {
-                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(starData.get(i),displayAsMinutes);
+                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(starData.get(i), plugin.isDisplayAsMinutes());
                 r.setComponentPopupMenu(buildRemoveMenu(starData.get(i)));
                 r.setBackground(i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR :ColorScheme.DARKER_GRAY_COLOR);
                 listContainer.add(r);
@@ -153,8 +138,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         removeEntryOption.setText("Remove?");
         removeEntryOption.setFont(FontManager.getRunescapeSmallFont());
         removeEntryOption.addActionListener(e -> {
-            starData.remove(star);
-            updateList();
+            plugin.removeStar(star);
         });
         popupMenu.add(removeEntryOption);
         return popupMenu;
@@ -189,7 +173,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
                 break;
         }
         orderIndex = order;
-        updateList();
+        updateList(plugin.getStarData());
     }
 
     private JPanel exportPanel()
@@ -203,7 +187,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
             public void mousePressed(MouseEvent e) {
                 if (!SwingUtilities.isRightMouseButton(e))
                 {
-                    exportDataToClipboard();
+                    plugin.exportData();
                 }
             }
 
@@ -232,11 +216,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
             public void mousePressed(MouseEvent e) {
                 if (!SwingUtilities.isRightMouseButton(e))
                 {
-                    try {
-                        importDataFromClipboard();
-                    } catch (IOException | UnsupportedFlavorException ioException) {
-                        ioException.printStackTrace();
-                    }
+                    plugin.importData();
                 }
             }
 
@@ -252,51 +232,6 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         });
         panel.add(label);
         return panel;
-    }
-
-    private void importDataFromClipboard() throws IOException, UnsupportedFlavorException {
-        String clipboard;
-        JsonArray json;
-        try {
-            clipboard = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor);
-        } catch (UnsupportedFlavorException e) {
-            return;
-        }
-
-        if (clipboard.equals("")) {
-            return;
-        }
-        try
-        {
-            json = new Gson().fromJson(clipboard, JsonArray.class);
-        }
-        catch (JsonSyntaxException e)
-        {
-            return;
-        }
-
-        for (JsonElement el: json) {
-            try
-            {
-                ShootingStarTrackingData sstd = new Gson().fromJson(el, ShootingStarTrackingData.class);
-                if (starData.stream().anyMatch(o -> o.getWorld()==sstd.getWorld()))
-                {
-                    return;
-                }
-                starData.add(sstd);
-            }
-            catch (Exception e)
-            {
-                return;
-            }
-        }
-        updateList();
-    }
-
-    private void exportDataToClipboard()
-    {
-        String json = new Gson().toJson(starData);
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
     }
 
     private enum Order

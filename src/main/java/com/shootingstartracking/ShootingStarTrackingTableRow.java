@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.FontManager;
 
-import javax.inject.Inject;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -22,7 +21,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
     @Getter
     private final ShootingStarTrackingData starData;
 
-    private boolean displayAsMinutes;
+    private final boolean displayAsMinutes;
 
     ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes)
     {
@@ -88,7 +87,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         String time;
         if (displayAsMinutes) {
             long timeDelta = TimeUnit.MILLISECONDS.toMinutes(starData.getTime() - Instant.now().toEpochMilli());
-            time = String.valueOf(timeDelta) + " mins";
+            time = timeDelta + " mins";
         } else {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
             Instant instant = Instant.ofEpochMilli(starData.getTime());
