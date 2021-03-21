@@ -12,8 +12,8 @@ public interface ShootingStarTrackingConfig extends Config
 
     @ConfigItem(
             keyName = "timeTillRemove",
-            name = "Time till stars are removed",
-            description = "The number of minutes after landing until the star is removed from the list")
+            name = "Minutes till stars are removed",
+            description = "The number of minutes after landing the star will remain on the list")
     default int timeTillRemoveConfig() {return TIME_TILL_REMOVE;}
 
     @ConfigItem(
