@@ -23,13 +23,13 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
     private final boolean displayAsMinutes;
 
-    ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes)
+    ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor)
     {
         this.starData = starData;
         this.displayAsMinutes = displayAsMinutes;
         setLayout(new BorderLayout());
         setBorder(new EmptyBorder(2,0,2,0));
-
+        setBackground(backgroundColor);
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -37,7 +37,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
             }
             @Override
             public void mouseExited(MouseEvent e) {
-                setBackground(getBackground().darker());
+                setBackground(backgroundColor);
             }
         });
 
@@ -46,6 +46,18 @@ public class ShootingStarTrackingTableRow extends JPanel {
         worldField.setOpaque(false);
 
         JPanel locationField = buildLocationField();
+        locationField.setToolTipText(starData.getLocation().getLocation());
+        locationField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                setBackground(getBackground().brighter());
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                setBackground(backgroundColor);
+            }
+        });
         locationField.setPreferredSize(new Dimension(50,20));
         locationField.setOpaque(false);
 

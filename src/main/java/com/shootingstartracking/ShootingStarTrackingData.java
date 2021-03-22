@@ -11,23 +11,11 @@ public class ShootingStarTrackingData {
     @Getter
     private final long time;
 
-    public ShootingStarTrackingData(int world, String location, long time)
+    public ShootingStarTrackingData(int world, ShootingStarLocations location, long time)
     {
         this.world = world;
-        this.location = parseLocation(location);
+        this.location = location;
         this.time = time;
-    }
-
-    public ShootingStarLocations parseLocation(String location)
-    {
-        for (ShootingStarLocations loc: ShootingStarLocations.values())
-        {
-            if (loc.getLocation().contains(location))
-            {
-                return loc;
-            }
-        }
-        return ShootingStarLocations.UNKNOWN;
     }
 
     @Override
@@ -41,9 +29,9 @@ public class ShootingStarTrackingData {
     enum ShootingStarLocations {
         ASGARNIA("Asgarnia"),
         KARAMJA("Crandor or Karamja"),
-        FELDIP_HILLS("Feldip Hills or the Isle of Souls"),
-        FOSSIL_ISLAND("Fossil Island or Mos Le'Harmless"),
-        FREMENNIK("Fremennik Lands or Lunar Isle"),
+        FELDIP_HILLS("Feldip Hills or on the Isle of Souls"),
+        FOSSIL_ISLAND("Fossil Island or on Mos Le'Harmless"),
+        FREMENNIK("Fremennik Lands or on Lunar Isle"),
         KOUREND("Great Kourend"),
         KANDARIN("Kandarin"),
         KEBOS("Kebos Lowlands"),

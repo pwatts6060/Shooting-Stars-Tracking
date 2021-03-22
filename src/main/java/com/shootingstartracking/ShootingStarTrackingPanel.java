@@ -118,9 +118,9 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
             for (int i = 0; i < starData.size(); i++)
             {
-                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(starData.get(i), plugin.isDisplayAsMinutes());
+                Color backgroundColor = i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR :ColorScheme.DARKER_GRAY_COLOR;
+                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(starData.get(i), plugin.isDisplayAsMinutes(), backgroundColor);
                 r.setComponentPopupMenu(buildRemoveMenu(starData.get(i)));
-                r.setBackground(i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR :ColorScheme.DARKER_GRAY_COLOR);
                 listContainer.add(r);
             }
         }
@@ -137,9 +137,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         JMenuItem removeEntryOption = new JMenuItem();
         removeEntryOption.setText("Remove?");
         removeEntryOption.setFont(FontManager.getRunescapeSmallFont());
-        removeEntryOption.addActionListener(e -> {
-            plugin.removeStar(star);
-        });
+        removeEntryOption.addActionListener(e -> plugin.removeStar(star));
         popupMenu.add(removeEntryOption);
         return popupMenu;
     }

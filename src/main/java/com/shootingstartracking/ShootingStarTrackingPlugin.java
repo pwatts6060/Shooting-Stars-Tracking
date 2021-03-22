@@ -108,8 +108,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 			if (widget == null) {
 				return;
 			}
-			final String[] locations = new String[]{"Misthalin","Desert","Wilderness","Asgarnia","Karamja","Fremennik","Tirannwn","Kandarin","Fossil","Feldip Hills",
-					"Kebos","Kourend","Morytania","Piscatoris"};
+			ShootingStarTrackingData.ShootingStarLocations[] locations = ShootingStarTrackingData.ShootingStarLocations.values();
 			ZonedDateTime time = ZonedDateTime.now(ZoneId.of("UTC"));
 			String widgetText;
 
@@ -118,8 +117,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 			} catch (NullPointerException e) {
 				return;
 			}
-
-			Optional<String> match = Arrays.stream(locations).filter(widgetText::contains).findAny();
+			Optional<ShootingStarTrackingData.ShootingStarLocations> match = Arrays.stream(locations).filter(o -> widgetText.contains(o.getLocation())).findAny();
 			if (!match.isPresent())
 			{
 				log.info("No match found");
