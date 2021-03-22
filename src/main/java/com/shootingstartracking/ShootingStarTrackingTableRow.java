@@ -58,6 +58,8 @@ public class ShootingStarTrackingTableRow extends JPanel {
                 setBackground(backgroundColor);
             }
         });
+        locationField.setInheritsPopupMenu(true);
+        this.setInheritsPopupMenu(true);
         locationField.setPreferredSize(new Dimension(50,20));
         locationField.setOpaque(false);
 

@@ -123,24 +123,22 @@ public class ShootingStarTrackingPlugin extends Plugin
 				log.info("No match found");
 				return;
 			}
+			Pattern minutesPattern = Pattern.compile("(\\d+) (?:minutes?|to)");
+			Pattern hoursPattern = Pattern.compile("(\\d+) hours?");
+			Pattern minutesThenHoursPattern = Pattern.compile("next (\\d)+ minutes to (\\d) hours?");
 
-			Pattern p = Pattern.compile("in the next( ([12]) hour)? ([0-9]+) minutes|next ([0-9]+) to");
-			Matcher matcher = p.matcher(widgetText);
+			Matcher matcher = minutesPattern.matcher(widgetText);
 			if (matcher.find())
 			{
-				int hours  = 0;
-				int mins = 0;
-				if (matcher.group(4) != null)
+				time = time.plusMinutes(Integer.parseInt(matcher.group(1)));
+			}
+			matcher = hoursPattern.matcher(widgetText);
+			if (matcher.find())
+			{
+				if (!minutesThenHoursPattern.matcher(widgetText).find())
 				{
-					mins = Integer.parseInt(matcher.group(4));
+					time = time.plusHours(Integer.parseInt(matcher.group(1)));
 				}
-				else if (matcher.group(2) != null && matcher.group(3) != null)
-				{
-					hours = Integer.parseInt(matcher.group(2));
-					mins = Integer.parseInt(matcher.group(3));
-				}
-				time = time.plusHours(hours);
-				time = time.plusMinutes(mins);
 			}
 			addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),time.toInstant().toEpochMilli()));
 		});
@@ -148,7 +146,6 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	private void addToList(ShootingStarTrackingData data)
 	{
-		log.info(data.toString());
 		ShootingStarTrackingData oldStar = starData.stream().filter(star -> data.getWorld() == star.getWorld()).findFirst().orElse(null);
 		if (oldStar != null) {
 			if (data.getTime() < oldStar.getTime()) {
