@@ -141,6 +141,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 				}
 			}
 			addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),time.toInstant().toEpochMilli()));
+			SwingUtilities.invokeLater(() -> panel.updateList(starData));
 		});
 	}
 
@@ -154,7 +155,6 @@ public class ShootingStarTrackingPlugin extends Plugin
 			starData.remove(oldStar);
 		}
 		starData.add(data);
-		SwingUtilities.invokeLater(() -> panel.updateList(starData));
 	}
 
 	@Schedule(
