@@ -143,7 +143,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         popupMenu.setBorder(new EmptyBorder(5,5,5,5));
 
         JMenuItem removeEntryOption = new JMenuItem();
-        removeEntryOption.setText("Remove?");
+        removeEntryOption.setText("Remove");
         removeEntryOption.setFont(FontManager.getRunescapeSmallFont());
         removeEntryOption.addActionListener(e -> plugin.removeStar(star));
         popupMenu.add(removeEntryOption);
