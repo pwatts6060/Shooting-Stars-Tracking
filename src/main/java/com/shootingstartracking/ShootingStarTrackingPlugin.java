@@ -186,7 +186,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 				.tooltip("Shooting Star Tracking")
 				.icon(icon)
 				.panel(panel)
-				.priority(6)
+				.priority(7)
 				.build();
 		clientToolbar.addNavigation(navButton);
 		panel.updateList(starData);
