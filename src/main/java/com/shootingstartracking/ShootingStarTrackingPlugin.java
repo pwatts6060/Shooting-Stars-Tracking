@@ -81,7 +81,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded) {
 		if (widgetLoaded.getGroupId() == TELESCOPE_WIDGET_ID) {
-			extractStarInformation();
+			clientThread.invokeLater(this::extractStarInformation);
 		}
 	}
 
@@ -104,47 +104,44 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	private void extractStarInformation()
 	{
-		clientThread.invokeLater(() ->
+		final Widget widget = client.getWidget(TELESCOPE_WIDGET_ID,1);
+		if (widget == null) {
+			return;
+		}
+		ShootingStarTrackingData.ShootingStarLocations[] locations = ShootingStarTrackingData.ShootingStarLocations.values();
+		ZonedDateTime time = ZonedDateTime.now(ZoneId.of("UTC"));
+		String widgetText;
+
+		try{
+			widgetText = widget.getText().replace("<br>"," ");
+		} catch (NullPointerException e) {
+			return;
+		}
+		Optional<ShootingStarTrackingData.ShootingStarLocations> match = Arrays.stream(locations).filter(o -> widgetText.contains(o.getLocation())).findAny();
+		if (!match.isPresent())
 		{
-			final Widget widget = client.getWidget(TELESCOPE_WIDGET_ID,1);
-			if (widget == null) {
-				return;
-			}
-			ShootingStarTrackingData.ShootingStarLocations[] locations = ShootingStarTrackingData.ShootingStarLocations.values();
-			ZonedDateTime time = ZonedDateTime.now(ZoneId.of("UTC"));
-			String widgetText;
+			log.info("No match found");
+			return;
+		}
+		Pattern minutesPattern = Pattern.compile("(\\d+) (?:minutes?|to)");
+		Pattern hoursPattern = Pattern.compile("(\\d+) hours?");
+		Pattern minutesThenHoursPattern = Pattern.compile("next (\\d)+ minutes to (\\d) hours?");
 
-			try{
-				widgetText = widget.getText().replace("<br>"," ");
-			} catch (NullPointerException e) {
-				return;
-			}
-			Optional<ShootingStarTrackingData.ShootingStarLocations> match = Arrays.stream(locations).filter(o -> widgetText.contains(o.getLocation())).findAny();
-			if (!match.isPresent())
+		Matcher matcher = minutesPattern.matcher(widgetText);
+		if (matcher.find())
+		{
+			time = time.plusMinutes(Integer.parseInt(matcher.group(1)));
+		}
+		matcher = hoursPattern.matcher(widgetText);
+		if (matcher.find())
+		{
+			if (!minutesThenHoursPattern.matcher(widgetText).find())
 			{
-				log.info("No match found");
-				return;
+				time = time.plusHours(Integer.parseInt(matcher.group(1)));
 			}
-			Pattern minutesPattern = Pattern.compile("(\\d+) (?:minutes?|to)");
-			Pattern hoursPattern = Pattern.compile("(\\d+) hours?");
-			Pattern minutesThenHoursPattern = Pattern.compile("next (\\d)+ minutes to (\\d) hours?");
-
-			Matcher matcher = minutesPattern.matcher(widgetText);
-			if (matcher.find())
-			{
-				time = time.plusMinutes(Integer.parseInt(matcher.group(1)));
-			}
-			matcher = hoursPattern.matcher(widgetText);
-			if (matcher.find())
-			{
-				if (!minutesThenHoursPattern.matcher(widgetText).find())
-				{
-					time = time.plusHours(Integer.parseInt(matcher.group(1)));
-				}
-			}
-			addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),time.toInstant().toEpochMilli()));
-			SwingUtilities.invokeLater(() -> panel.updateList(starData));
-		});
+		}
+		addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),time.toInstant().toEpochMilli()));
+		SwingUtilities.invokeLater(() -> panel.updateList(starData));
 	}
 
 	private void addToList(ShootingStarTrackingData data)
