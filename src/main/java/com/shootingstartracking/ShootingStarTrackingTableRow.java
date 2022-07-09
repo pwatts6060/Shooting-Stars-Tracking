@@ -120,6 +120,10 @@ public class ShootingStarTrackingTableRow extends JPanel {
     }
 
     private Color getTimeColor(ShootingStarTrackingData starData) {
-		return starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli() ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR;
+		if (starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli())
+		{
+			return LIGHT_GRAY_COLOR;
+		}
+		return MEDIUM_GRAY_COLOR;
 	}
 }
