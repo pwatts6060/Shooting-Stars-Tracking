@@ -225,6 +225,10 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	public void sendChatMessage(String chatMessage)
 	{
+		if (client.getLocalPlayer() == null) {
+			return;
+		}
+
 		final String message = new ChatMessageBuilder()
 				.append(ChatColorType.NORMAL)
 				.append(chatMessage)
