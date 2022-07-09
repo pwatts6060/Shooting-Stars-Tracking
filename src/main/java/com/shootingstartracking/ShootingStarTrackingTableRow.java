@@ -79,7 +79,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
-        JLabel worldField = new JLabel(starData.getWorld() + "");
+        JLabel worldField = new JLabel(Integer.toString(starData.getWorld()));
         worldField.setFont(FontManager.getRunescapeSmallFont());
         worldField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
         panel.add(worldField,BorderLayout.CENTER);
