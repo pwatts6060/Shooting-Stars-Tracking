@@ -6,7 +6,7 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import lombok.Getter;
-import net.runelite.client.ui.ColorScheme;
+import static net.runelite.client.ui.ColorScheme.*;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.border.EmptyBorder;
@@ -20,6 +20,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 public class ShootingStarTrackingTableRow extends JPanel {
+
+	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+	private static final ZoneId utcZoneId = ZoneId.of("UTC");
 
     @Getter
     private final ShootingStarTrackingData starData;
@@ -81,7 +84,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel worldField = new JLabel(Integer.toString(starData.getWorld()));
         worldField.setFont(FontManager.getRunescapeSmallFont());
-        worldField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
+        worldField.setForeground((starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli()) ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR);
         panel.add(worldField,BorderLayout.CENTER);
         return panel;
     }
@@ -92,7 +95,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel locationField = new JLabel(starData.getLocation().getLocation());
         locationField.setFont(FontManager.getRunescapeSmallFont());
-        locationField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
+        locationField.setForeground((starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli()) ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR);
         panel.add(locationField,BorderLayout.CENTER);
         return panel;
     }
@@ -106,13 +109,13 @@ public class ShootingStarTrackingTableRow extends JPanel {
             long timeDelta = TimeUnit.MILLISECONDS.toMinutes(starData.getTime() - Instant.now().toEpochMilli());
             time = timeDelta + " mins";
         } else {
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
             Instant instant = Instant.ofEpochMilli(starData.getTime());
-            time = LocalDateTime.ofInstant(instant,ZoneId.systemDefault()).format(dtf);
+            time = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(dtf);
         }
         JLabel timeField = new JLabel(time);
         timeField.setFont(FontManager.getRunescapeSmallFont());
-        timeField.setForeground((starData.getTime() > ZonedDateTime.now(ZoneId.of("UTC")).toInstant().toEpochMilli()) ? ColorScheme.LIGHT_GRAY_COLOR : ColorScheme.MEDIUM_GRAY_COLOR);
+        Color color = starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli() ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR;
+		timeField.setForeground(color);
         panel.add(timeField);
         return panel;
     }

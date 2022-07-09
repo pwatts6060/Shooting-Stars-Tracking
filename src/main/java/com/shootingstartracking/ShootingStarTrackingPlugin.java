@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 public class ShootingStarTrackingPlugin extends Plugin
 {
 	private static final int TELESCOPE_WIDGET_ID = 229;
+	private static final ZoneId utcZoneId = ZoneId.of("UTC");
 
 	@Inject
 	private Client client;
@@ -111,7 +112,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 			return;
 		}
 		ShootingStarTrackingData.ShootingStarLocations[] locations = ShootingStarTrackingData.ShootingStarLocations.values();
-		ZonedDateTime time = ZonedDateTime.now(ZoneId.of("UTC"));
+		ZonedDateTime time = ZonedDateTime.now(utcZoneId);
 		String widgetText;
 
 		try{
@@ -165,7 +166,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 	public void checkDepletedStars()
 	{
 		List<ShootingStarTrackingData> stars = new ArrayList<>(starData);
-		ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+		ZonedDateTime now = ZonedDateTime.now(utcZoneId);
 
 		for (ShootingStarTrackingData star : starData) {
 			if (star.getTime() < now.minusMinutes(config.timeTillRemoveConfig()).toInstant().toEpochMilli()) {
