@@ -7,7 +7,7 @@ import net.runelite.client.config.ConfigItem;
 @ConfigGroup("Shooting Stars Tracking")
 public interface ShootingStarTrackingConfig extends Config
 {
-    int TIME_TILL_REMOVE = 5;
+    int TIME_TILL_REMOVE = 85;
     boolean DISPLAY_AS_MINUTES = false;
 
     @ConfigItem(
