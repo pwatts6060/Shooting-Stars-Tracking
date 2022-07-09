@@ -142,11 +142,18 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.setBorder(new EmptyBorder(5,5,5,5));
 
+		JMenuItem hopEntryOption = new JMenuItem();
+		hopEntryOption.setText("Hop to");
+		hopEntryOption.setFont(FontManager.getRunescapeSmallFont());
+		hopEntryOption.addActionListener(e -> plugin.hopTo(star));
+		popupMenu.add(hopEntryOption);
+
         JMenuItem removeEntryOption = new JMenuItem();
         removeEntryOption.setText("Remove");
         removeEntryOption.setFont(FontManager.getRunescapeSmallFont());
         removeEntryOption.addActionListener(e -> plugin.removeStar(star));
         popupMenu.add(removeEntryOption);
+
         return popupMenu;
     }
 

@@ -11,6 +11,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
@@ -67,6 +68,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	@Inject
 	private ChatMessageManager chatMessageManager;
+
+	@Inject
+	private WorldHop worldHop;
 
 	private ShootingStarTrackingPanel panel;
 
@@ -246,5 +250,15 @@ public class ShootingStarTrackingPlugin extends Plugin
 		String json = new Gson().toJson(starData);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
 		sendChatMessage("Star data exported to clipboard.");
+	}
+
+	public void hopTo(ShootingStarTrackingData star)
+	{
+		worldHop.hop(star.getWorld());
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event) {
+		worldHop.onGameTick();
 	}
 }
