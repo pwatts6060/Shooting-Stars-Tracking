@@ -84,7 +84,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel worldField = new JLabel(Integer.toString(starData.getWorld()));
         worldField.setFont(FontManager.getRunescapeSmallFont());
-        worldField.setForeground((starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli()) ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR);
+        worldField.setForeground(getTimeColor(starData));
         panel.add(worldField,BorderLayout.CENTER);
         return panel;
     }
@@ -95,7 +95,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel locationField = new JLabel(starData.getLocation().getLocation());
         locationField.setFont(FontManager.getRunescapeSmallFont());
-        locationField.setForeground((starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli()) ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR);
+        locationField.setForeground(getTimeColor(starData));
         panel.add(locationField,BorderLayout.CENTER);
         return panel;
     }
@@ -114,9 +114,12 @@ public class ShootingStarTrackingTableRow extends JPanel {
         }
         JLabel timeField = new JLabel(time);
         timeField.setFont(FontManager.getRunescapeSmallFont());
-        Color color = starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli() ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR;
-		timeField.setForeground(color);
+		timeField.setForeground(getTimeColor(starData));
         panel.add(timeField);
         return panel;
     }
+
+    private Color getTimeColor(ShootingStarTrackingData starData) {
+		return starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli() ? LIGHT_GRAY_COLOR : MEDIUM_GRAY_COLOR;
+	}
 }
