@@ -21,9 +21,7 @@ public class ShootingStarTrackingData {
     @Override
     public String toString()
     {
-        String s = "";
-        s += "world:" +world + " location:" + location + " time:" + time;
-        return s;
+		return "world:" + world + " location:" + location + " time:" + time;
     }
 
     enum ShootingStarLocations {
