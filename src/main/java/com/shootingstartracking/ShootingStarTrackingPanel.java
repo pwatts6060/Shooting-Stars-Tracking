@@ -128,6 +128,15 @@ public class ShootingStarTrackingPanel extends PluginPanel {
                 Color backgroundColor = i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR : ColorScheme.DARKER_GRAY_COLOR;
                 ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(data, plugin.isDisplayAsMinutes(), backgroundColor);
                 r.setComponentPopupMenu(buildRemoveMenu(data));
+                r.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						// double click row hops to world
+						if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+							plugin.hopTo(data);
+						}
+					}
+				});
                 listContainer.add(r);
                 i++;
             }
