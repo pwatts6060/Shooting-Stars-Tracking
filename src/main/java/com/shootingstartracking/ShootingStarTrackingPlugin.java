@@ -50,6 +50,8 @@ import java.util.regex.Pattern;
 )
 public class ShootingStarTrackingPlugin extends Plugin
 {
+	private static final int TELESCOPE_WIDGET_ID = 229;
+
 	@Inject
 	private Client client;
 
@@ -78,7 +80,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded) {
-		if (widgetLoaded.getGroupId() == 229) {
+		if (widgetLoaded.getGroupId() == TELESCOPE_WIDGET_ID) {
 			extractStarInformation();
 		}
 	}
@@ -104,7 +106,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 	{
 		clientThread.invokeLater(() ->
 		{
-			final Widget widget = client.getWidget(229,1);
+			final Widget widget = client.getWidget(TELESCOPE_WIDGET_ID,1);
 			if (widget == null) {
 				return;
 			}
