@@ -88,11 +88,13 @@ public class ShootingStarTrackingPlugin extends Plugin
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event)
 	{
-		if (event.getGroup().equals("Shooting Stars Tracking")) {
-			if (event.getKey().equals("displayAsTime")) {
-				displayAsMinutes = config.displayAsMinutes();
-				panel.updateList(starData);
-			}
+		if (!event.getGroup().equals(ShootingStarTrackingConfig.configGroup)) {
+			return;
+		}
+
+		if (event.getKey().equals(ShootingStarTrackingConfig.displayAsTime)) {
+			displayAsMinutes = config.displayAsMinutes();
+			panel.updateList(starData);
 		}
 	}
 
