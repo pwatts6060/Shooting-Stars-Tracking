@@ -102,7 +102,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
     void updateList(List<ShootingStarTrackingData> starData) {
         listContainer.removeAll();
-        if (starData.size() == 0) {
+        if (starData.isEmpty()) {
             JLabel noStarsLabel = new JLabel("Look through a telescope to start tracking stars");
             noStarsLabel.setFont(FontManager.getRunescapeSmallFont());
             noStarsLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
