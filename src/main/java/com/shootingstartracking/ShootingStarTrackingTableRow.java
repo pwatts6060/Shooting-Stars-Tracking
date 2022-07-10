@@ -103,7 +103,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
-        JLabel locationField = new JLabel(starData.getLocation().getLocation());
+        JLabel locationField = new JLabel(starData.getLocation().getShortLocation());
         locationField.setFont(FontManager.getRunescapeSmallFont());
         locationField.setForeground(getTimeColor(starData));
         panel.add(locationField,BorderLayout.CENTER);
