@@ -28,16 +28,17 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
 	static final int WORLD_WIDTH = 35;
 	static final int LOCATION_WIDTH = 60;
-	static final int TIME_WIDTH = 60;
+	static final int TIME_WIDTH = 45;
 
     private ShootingStarTrackingTableHeader worldHeader;
     private ShootingStarTrackingTableHeader locationHeader;
-    private ShootingStarTrackingTableHeader timeHeader;
+    private ShootingStarTrackingTableHeader minTimeHeader;
+    private ShootingStarTrackingTableHeader maxTimeHeader;
 
     private final JPanel listContainer = new JPanel();
 
     private final ShootingStarTrackingPlugin plugin;
-    private Order orderIndex = Order.TIME;
+    private Order orderIndex = Order.MIN_TIME;
     private boolean ascendingOrder = true;
 
     ShootingStarTrackingPanel(ShootingStarTrackingPlugin plugin) {
@@ -91,24 +92,44 @@ public class ShootingStarTrackingPanel extends PluginPanel {
             }
         });
 
-        timeHeader = new ShootingStarTrackingTableHeader("Time");
-        timeHeader.setPreferredSize(new Dimension(TIME_WIDTH,20));
-        timeHeader.addMouseListener(new MouseAdapter() {
+        JPanel timePanel = new JPanel(new BorderLayout());
+
+        minTimeHeader = new ShootingStarTrackingTableHeader("Min");
+		minTimeHeader.setPreferredSize(new Dimension(TIME_WIDTH,20));
+		minTimeHeader.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 if (SwingUtilities.isRightMouseButton(e))
                 {
                     return;
                 }
-                ascendingOrder = orderIndex != Order.TIME || !ascendingOrder;
-                orderBy(Order.TIME);
+                ascendingOrder = orderIndex != Order.MIN_TIME || !ascendingOrder;
+                orderBy(Order.MIN_TIME);
             }
         });
-        timeHeader.highlight(true,ascendingOrder);
+		minTimeHeader.highlight(true,ascendingOrder);
+
+		maxTimeHeader = new ShootingStarTrackingTableHeader("Max");
+		maxTimeHeader.setPreferredSize(new Dimension(TIME_WIDTH,20));
+		maxTimeHeader.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e))
+				{
+					return;
+				}
+				ascendingOrder = orderIndex != Order.MAX_TIME || !ascendingOrder;
+				orderBy(Order.MAX_TIME);
+			}
+		});
+		maxTimeHeader.highlight(true,ascendingOrder);
+
+		timePanel.add(minTimeHeader, BorderLayout.WEST);
+		timePanel.add(maxTimeHeader, BorderLayout.EAST);
 
         header.add(worldHeader,BorderLayout.WEST);
         header.add(locationHeader,BorderLayout.CENTER);
-        header.add(timeHeader,BorderLayout.EAST);
+        header.add(timePanel,BorderLayout.EAST);
         return header;
     }
 
@@ -128,7 +149,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
                     case LOCATION:
                         return getCompareValue(r1, r2, row ->
                                 row.getLocation().getLocation());
-                    case TIME:
+                    case MIN_TIME:
                         return getCompareValue(r1, r2, ShootingStarTrackingData::getMinTime);
                     default:
                         return 0;
@@ -207,7 +228,8 @@ public class ShootingStarTrackingPanel extends PluginPanel {
     {
         worldHeader.highlight(false, ascendingOrder);
         locationHeader.highlight(false, ascendingOrder);
-        timeHeader.highlight(false, ascendingOrder);
+        minTimeHeader.highlight(false, ascendingOrder);
+        maxTimeHeader.highlight(false, ascendingOrder);
         switch (order)
         {
             case WORLD:
@@ -216,9 +238,12 @@ public class ShootingStarTrackingPanel extends PluginPanel {
             case LOCATION:
                 locationHeader.highlight(true, ascendingOrder);
                 break;
-            case TIME:
-                timeHeader.highlight(true, ascendingOrder);
+            case MIN_TIME:
+                minTimeHeader.highlight(true, ascendingOrder);
                 break;
+			case MAX_TIME:
+				maxTimeHeader.highlight(true, ascendingOrder);
+				break;
         }
         orderIndex = order;
         updateList(plugin.getStarData());
@@ -315,6 +340,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
     {
         WORLD,
         LOCATION,
-        TIME
+		MIN_TIME,
+		MAX_TIME
     }
 }

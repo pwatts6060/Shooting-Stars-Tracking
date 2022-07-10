@@ -31,7 +31,8 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
     private final boolean displayAsMinutes;
 
-    private JLabel timeField;
+    private JLabel minTimeField;
+    private JLabel maxTimeField;
 
 	ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, int world)
     {
@@ -74,7 +75,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         locationField.setOpaque(false);
 
         JPanel timeField = buildTimeField();
-        timeField.setPreferredSize(new Dimension(ShootingStarTrackingPanel.TIME_WIDTH,20));
+        timeField.setPreferredSize(new Dimension(ShootingStarTrackingPanel.TIME_WIDTH * 2,20));
         timeField.setOpaque(false);
 
         add(worldField,BorderLayout.WEST);
@@ -116,23 +117,34 @@ public class ShootingStarTrackingTableRow extends JPanel {
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
-        timeField = new JLabel();
-		timeField.setFont(FontManager.getRunescapeSmallFont());
-        updateTime();
-        panel.add(timeField);
+        minTimeField = new JLabel();
+		minTimeField.setFont(FontManager.getRunescapeSmallFont());
+        panel.add(minTimeField, BorderLayout.CENTER);
+		maxTimeField = new JLabel();
+		maxTimeField.setFont(FontManager.getRunescapeSmallFont());
+		panel.add(maxTimeField, BorderLayout.EAST);
+		updateTime();
         return panel;
     }
 
     void updateTime() {
-		String time;
+		String minTime;
+		String maxTime;
 		if (displayAsMinutes) {
-			time = convertTime(starData.getMinTime());
+			minTime = convertTime(starData.getMinTime());
+			maxTime = convertTime(starData.getMaxTime());
 		} else {
-			Instant instant = Instant.ofEpochMilli(starData.getMinTime());
-			time = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(dtf);
+			Instant minInstant = Instant.ofEpochMilli(starData.getMinTime());
+			minTime = LocalDateTime.ofInstant(minInstant, ZoneId.systemDefault()).format(dtf);
+			Instant maxInstant = Instant.ofEpochMilli(starData.getMaxTime());
+			maxTime = LocalDateTime.ofInstant(maxInstant, ZoneId.systemDefault()).format(dtf);
 		}
-		timeField.setText(time);
-		timeField.setForeground(getTimeColor(starData));
+		minTimeField.setText(minTime);
+		maxTimeField.setText(maxTime);
+
+		Color color = getTimeColor(starData);
+		minTimeField.setForeground(color);
+		maxTimeField.setForeground(color);
 	}
 
     public static String convertTime(long epoch) {
