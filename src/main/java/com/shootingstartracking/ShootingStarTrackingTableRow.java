@@ -137,9 +137,13 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
     public static String convertTime(long epoch) {
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(epoch - Instant.now().toEpochMilli());
+		boolean negative = seconds < 0;
+		seconds = Math.abs(seconds);
+		String time = negative ? "-" : "";
 		long minutes = seconds / 60;
 		seconds %= 60;
-		return String.format("%d:%02d", minutes, Math.abs(seconds));
+		time += String.format("%d:%02d", minutes, seconds);
+		return time;
 	}
 
     private Color getTimeColor(ShootingStarTrackingData starData) {

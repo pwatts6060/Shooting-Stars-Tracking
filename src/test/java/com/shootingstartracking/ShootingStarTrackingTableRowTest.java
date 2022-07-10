@@ -9,6 +9,7 @@ public class ShootingStarTrackingTableRowTest extends TestCase
 	{
 		assertEquals("0:00", ShootingStarTrackingTableRow.convertTime(Instant.now().toEpochMilli()));
 		assertEquals("0:15", ShootingStarTrackingTableRow.convertTime(Instant.now().toEpochMilli() + 15 * 1000));
+		assertEquals("-0:15", ShootingStarTrackingTableRow.convertTime(Instant.now().toEpochMilli() - 15 * 1000));
 		assertEquals("1:15", ShootingStarTrackingTableRow.convertTime(Instant.now().toEpochMilli() + 75 * 1000));
 		assertEquals("-1:15", ShootingStarTrackingTableRow.convertTime(Instant.now().toEpochMilli() - 75 * 1000));
 		assertEquals("-1:45", ShootingStarTrackingTableRow.convertTime(Instant.now().toEpochMilli() - 105 * 1000));
