@@ -33,7 +33,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
     private JLabel worldLabel;
 
-    ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor)
+    ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, int world)
     {
         this.starData = starData;
         this.displayAsMinutes = displayAsMinutes;
@@ -51,7 +51,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
             }
         });
 
-        JPanel worldField = buildWorldField();
+        JPanel worldField = buildWorldField(world);
         worldField.setPreferredSize(new Dimension(60,20));
         worldField.setOpaque(false);
 
@@ -82,16 +82,24 @@ public class ShootingStarTrackingTableRow extends JPanel {
         add(timeField,BorderLayout.EAST);
     }
 
-    private JPanel buildWorldField()
+    private JPanel buildWorldField(int world)
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
 		worldLabel = new JLabel(Integer.toString(starData.getWorld()));
 		worldLabel.setFont(FontManager.getRunescapeSmallFont());
-		worldLabel.setForeground(getTimeColor(starData));
+		worldLabel.setForeground(worldColor(world));
         panel.add(worldLabel,BorderLayout.CENTER);
         return panel;
     }
+
+	private Color worldColor(int curWorld) {
+		if (starData.getWorld() == curWorld) {
+			return BRAND_ORANGE;
+		} else {
+			return getTimeColor(starData);
+		}
+	}
 
     private JPanel buildLocationField()
     {
@@ -129,17 +137,5 @@ public class ShootingStarTrackingTableRow extends JPanel {
 			return LIGHT_GRAY_COLOR;
 		}
 		return MEDIUM_GRAY_COLOR;
-	}
-
-	public void colorCurWorld(int curWorld) {
-    	Color color;
-		if (starData.getWorld() == curWorld) {
-			color = BRAND_ORANGE;
-		} else {
-			color = getTimeColor(starData);
-		}
-		if (!worldLabel.getForeground().equals(color)) {
-			worldLabel.setForeground(color);
-		}
 	}
 }

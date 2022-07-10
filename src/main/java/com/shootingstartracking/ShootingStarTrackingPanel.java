@@ -133,7 +133,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
             int i = 0;
             for (ShootingStarTrackingData data : starData) {
                 Color backgroundColor = i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR : ColorScheme.DARKER_GRAY_COLOR;
-                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(data, plugin.isDisplayAsMinutes(), backgroundColor);
+                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(data, plugin.isDisplayAsMinutes(), backgroundColor, plugin.getWorld());
                 r.setComponentPopupMenu(buildRemoveMenu(data));
                 r.addMouseListener(new MouseAdapter() {
 					@Override
@@ -144,7 +144,6 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 						}
 					}
 				});
-                r.colorCurWorld(plugin.getWorld());
                 listContainer.add(r);
                 i++;
             }
