@@ -39,7 +39,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
     private final ShootingStarTrackingPlugin plugin;
     private Order orderIndex = Order.MIN_TIME;
-    private boolean ascendingOrder = true;
+    private boolean ascendingOrder = false;
 
     ShootingStarTrackingPanel(ShootingStarTrackingPlugin plugin) {
         this.plugin = plugin;
