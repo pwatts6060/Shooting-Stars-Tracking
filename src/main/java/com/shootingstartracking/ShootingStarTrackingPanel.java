@@ -137,6 +137,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 						}
 					}
 				});
+                r.colorCurWorld(plugin.getWorld());
                 listContainer.add(r);
                 i++;
             }

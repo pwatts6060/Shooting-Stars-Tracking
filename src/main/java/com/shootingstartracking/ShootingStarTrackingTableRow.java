@@ -6,7 +6,9 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import lombok.Getter;
-import static net.runelite.client.ui.ColorScheme.*;
+import static net.runelite.client.ui.ColorScheme.BRAND_ORANGE;
+import static net.runelite.client.ui.ColorScheme.LIGHT_GRAY_COLOR;
+import static net.runelite.client.ui.ColorScheme.MEDIUM_GRAY_COLOR;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.border.EmptyBorder;
@@ -28,6 +30,8 @@ public class ShootingStarTrackingTableRow extends JPanel {
     private final ShootingStarTrackingData starData;
 
     private final boolean displayAsMinutes;
+
+    private JLabel worldLabel;
 
     ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor)
     {
@@ -82,10 +86,10 @@ public class ShootingStarTrackingTableRow extends JPanel {
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
-        JLabel worldField = new JLabel(Integer.toString(starData.getWorld()));
-        worldField.setFont(FontManager.getRunescapeSmallFont());
-        worldField.setForeground(getTimeColor(starData));
-        panel.add(worldField,BorderLayout.CENTER);
+		worldLabel = new JLabel(Integer.toString(starData.getWorld()));
+		worldLabel.setFont(FontManager.getRunescapeSmallFont());
+		worldLabel.setForeground(getTimeColor(starData));
+        panel.add(worldLabel,BorderLayout.CENTER);
         return panel;
     }
 
@@ -125,5 +129,17 @@ public class ShootingStarTrackingTableRow extends JPanel {
 			return LIGHT_GRAY_COLOR;
 		}
 		return MEDIUM_GRAY_COLOR;
+	}
+
+	public void colorCurWorld(int curWorld) {
+    	Color color;
+		if (starData.getWorld() == curWorld) {
+			color = BRAND_ORANGE;
+		} else {
+			color = getTimeColor(starData);
+		}
+		if (!worldLabel.getForeground().equals(color)) {
+			worldLabel.setForeground(color);
+		}
 	}
 }

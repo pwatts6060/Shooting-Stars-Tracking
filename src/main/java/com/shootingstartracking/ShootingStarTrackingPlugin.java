@@ -11,6 +11,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
+import net.runelite.api.GameState;
+import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
@@ -82,6 +84,8 @@ public class ShootingStarTrackingPlugin extends Plugin
 	@Getter
 	@Setter
 	private List<ShootingStarTrackingData> starData = new ArrayList<>();
+
+	private int lastWorld;
 
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded widgetLoaded) {
@@ -260,5 +264,18 @@ public class ShootingStarTrackingPlugin extends Plugin
 	@Subscribe
 	public void onGameTick(GameTick event) {
 		worldHop.onGameTick();
+	}
+
+	public int getWorld()
+	{
+		return client.getWorld();
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event) {
+		if (event.getGameState() == GameState.LOGGED_IN && client.getWorld() != lastWorld) {
+			lastWorld = client.getWorld();
+			SwingUtilities.invokeLater(() -> panel.updateList(starData));
+		}
 	}
 }
