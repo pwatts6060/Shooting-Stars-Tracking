@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
 import com.google.inject.Provides;
+import com.shootingstartracking.ShootingStarTrackingData.ShootingStarLocations;
 import java.awt.Toolkit;
 import javax.swing.SwingUtilities;
 import lombok.Getter;
@@ -119,7 +120,6 @@ public class ShootingStarTrackingPlugin extends Plugin
 		if (widget == null) {
 			return;
 		}
-		ShootingStarTrackingData.ShootingStarLocations[] locations = ShootingStarTrackingData.ShootingStarLocations.values();
 		ZonedDateTime time = ZonedDateTime.now(utcZoneId);
 		String widgetText;
 
@@ -128,7 +128,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 		} catch (NullPointerException e) {
 			return;
 		}
-		Optional<ShootingStarTrackingData.ShootingStarLocations> match = Arrays.stream(locations).filter(o -> widgetText.contains(o.getLocation())).findAny();
+		Optional<ShootingStarLocations> match = Arrays.stream(ShootingStarLocations.values)
+			.filter(o -> widgetText.contains(o.getLocation()))
+			.findAny();
 		if (!match.isPresent())
 		{
 			log.info("No match found");

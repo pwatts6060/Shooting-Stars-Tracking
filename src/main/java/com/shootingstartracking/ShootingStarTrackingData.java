@@ -41,6 +41,8 @@ public class ShootingStarTrackingData {
         WILDERNESS("Wilderness"),
         UNKNOWN("Unknown");
 
+        public static final ShootingStarLocations[] values = ShootingStarLocations.values();
+
         @Getter
         private final String location;
 		@Getter
