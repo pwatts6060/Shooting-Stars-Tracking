@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import javax.inject.Inject;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -46,7 +47,6 @@ public class ShootingStarTrackingPanel extends PluginPanel {
     private final ShootingStarTrackingPlugin plugin;
     private Order orderIndex = Order.MIN_TIME;
 	private boolean ascendingOrder = false;
-
 
 	ShootingStarTrackingPanel(ShootingStarTrackingPlugin plugin) {
         this.plugin = plugin;
@@ -165,17 +165,8 @@ public class ShootingStarTrackingPanel extends PluginPanel {
             int i = 0;
             for (ShootingStarTrackingData data : starData) {
                 Color backgroundColor = i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR : ColorScheme.DARKER_GRAY_COLOR;
-                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(data, plugin.isDisplayAsMinutes(), backgroundColor, plugin.getWorld());
+                ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(data, plugin.isDisplayAsMinutes(), backgroundColor, plugin.getWorldHop(), plugin.getWorld());
                 r.setComponentPopupMenu(buildRemoveMenu(r, data));
-                r.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						// double click row hops to world
-						if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
-							plugin.hopTo(data);
-						}
-					}
-				});
                 listContainer.add(r);
                 i++;
             }

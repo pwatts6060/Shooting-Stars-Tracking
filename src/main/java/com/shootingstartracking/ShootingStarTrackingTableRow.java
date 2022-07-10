@@ -3,8 +3,10 @@ package com.shootingstartracking;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import javax.inject.Inject;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import lombok.Getter;
 import static net.runelite.client.ui.ColorScheme.BRAND_ORANGE;
@@ -35,7 +37,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
     private JLabel minTimeField;
     private JLabel maxTimeField;
 
-	ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, int world)
+	ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, final WorldHop worldHop, int curWorld)
     {
         this.starData = starData;
         this.displayAsMinutes = displayAsMinutes;
@@ -51,9 +53,16 @@ public class ShootingStarTrackingTableRow extends JPanel {
             public void mouseExited(MouseEvent e) {
                 setBackground(backgroundColor);
             }
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// double click row hops to world
+				if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+					worldHop.hop(starData.getWorld());
+				}
+			}
         });
 
-        JPanel worldField = buildWorldField(world);
+        JPanel worldField = buildWorldField(curWorld);
         worldField.setPreferredSize(new Dimension(ShootingStarTrackingPanel.WORLD_WIDTH,20));
         worldField.setOpaque(false);
 
@@ -69,6 +78,14 @@ public class ShootingStarTrackingTableRow extends JPanel {
             public void mouseExited(MouseEvent e) {
                 setBackground(backgroundColor);
             }
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				// double click row hops to world
+				if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)) {
+					worldHop.hop(starData.getWorld());
+				}
+			}
         });
         locationField.setInheritsPopupMenu(true);
         this.setInheritsPopupMenu(true);

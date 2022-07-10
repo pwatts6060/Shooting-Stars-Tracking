@@ -83,6 +83,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 	private ChatMessageManager chatMessageManager;
 
 	@Inject
+	@Getter
 	private WorldHop worldHop;
 
 	@Inject
