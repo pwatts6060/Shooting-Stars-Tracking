@@ -31,9 +31,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
     private final boolean displayAsMinutes;
 
-    private JLabel worldLabel;
-
-    ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, int world)
+	ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, int world)
     {
         this.starData = starData;
         this.displayAsMinutes = displayAsMinutes;
@@ -52,7 +50,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         });
 
         JPanel worldField = buildWorldField(world);
-        worldField.setPreferredSize(new Dimension(60,20));
+        worldField.setPreferredSize(new Dimension(ShootingStarTrackingPanel.WORLD_WIDTH,20));
         worldField.setOpaque(false);
 
         JPanel locationField = buildLocationField();
@@ -70,11 +68,11 @@ public class ShootingStarTrackingTableRow extends JPanel {
         });
         locationField.setInheritsPopupMenu(true);
         this.setInheritsPopupMenu(true);
-        locationField.setPreferredSize(new Dimension(50,20));
+        locationField.setPreferredSize(new Dimension(ShootingStarTrackingPanel.LOCATION_WIDTH,20));
         locationField.setOpaque(false);
 
         JPanel timeField = buildTimeField();
-        timeField.setPreferredSize(new Dimension(60,20));
+        timeField.setPreferredSize(new Dimension(ShootingStarTrackingPanel.TIME_WIDTH,20));
         timeField.setOpaque(false);
 
         add(worldField,BorderLayout.WEST);
@@ -86,7 +84,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
-		worldLabel = new JLabel(Integer.toString(starData.getWorld()));
+		JLabel worldLabel = new JLabel(Integer.toString(starData.getWorld()));
 		worldLabel.setFont(FontManager.getRunescapeSmallFont());
 		worldLabel.setForeground(worldColor(world));
         panel.add(worldLabel,BorderLayout.CENTER);

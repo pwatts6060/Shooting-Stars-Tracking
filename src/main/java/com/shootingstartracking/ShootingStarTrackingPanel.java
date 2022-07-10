@@ -25,6 +25,10 @@ import java.util.function.Function;
 
 public class ShootingStarTrackingPanel extends PluginPanel {
 
+	static final int WORLD_WIDTH = 35;
+	static final int LOCATION_WIDTH = 60;
+	static final int TIME_WIDTH = 60;
+
     private ShootingStarTrackingTableHeader worldHeader;
     private ShootingStarTrackingTableHeader locationHeader;
     private ShootingStarTrackingTableHeader timeHeader;
@@ -58,8 +62,8 @@ public class ShootingStarTrackingPanel extends PluginPanel {
     {
         JPanel header = new JPanel(new BorderLayout());
 
-        worldHeader = new ShootingStarTrackingTableHeader("World");
-        worldHeader.setPreferredSize(new Dimension(60,20));
+        worldHeader = new ShootingStarTrackingTableHeader("W");
+        worldHeader.setPreferredSize(new Dimension(WORLD_WIDTH,20));
         worldHeader.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -73,7 +77,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         });
 
         locationHeader = new ShootingStarTrackingTableHeader("Location");
-        locationHeader.setPreferredSize(new Dimension(50,20));
+        locationHeader.setPreferredSize(new Dimension(LOCATION_WIDTH,20));
         locationHeader.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -87,7 +91,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         });
 
         timeHeader = new ShootingStarTrackingTableHeader("Time");
-        timeHeader.setPreferredSize(new Dimension(60,20));
+        timeHeader.setPreferredSize(new Dimension(TIME_WIDTH,20));
         timeHeader.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
