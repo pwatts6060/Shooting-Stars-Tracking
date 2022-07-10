@@ -36,6 +36,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
     private JLabel minTimeField;
     private JLabel maxTimeField;
+	private JLabel locationField;
 
 	ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, final WorldHop worldHop, int curWorld)
     {
@@ -123,12 +124,17 @@ public class ShootingStarTrackingTableRow extends JPanel {
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
-        JLabel locationField = new JLabel(starData.getLocation().getShortLocation());
+        locationField = new JLabel(starData.getLocation().getShortLocation());
         locationField.setFont(FontManager.getRunescapeSmallFont());
-        locationField.setForeground(getLocationColor());
+		updateLocationColor();
         panel.add(locationField,BorderLayout.CENTER);
         return panel;
     }
+
+	void updateLocationColor()
+	{
+		locationField.setForeground(getLocationColor());
+	}
 
 	private Color getLocationColor()
 	{

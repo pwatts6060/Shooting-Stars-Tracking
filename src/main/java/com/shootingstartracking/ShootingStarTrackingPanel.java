@@ -185,6 +185,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 		for (Component component : listContainer.getComponents()) {
 			ShootingStarTrackingTableRow r = (ShootingStarTrackingTableRow) component;
 			r.updateTime();
+			r.updateLocationColor();
 		}
 
 		listContainer.repaint();
