@@ -3,6 +3,7 @@ package com.shootingstartracking;
 import com.google.common.collect.Ordering;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.Box;
@@ -157,6 +158,20 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         listContainer.repaint();
     }
 
+	public void updateTimes(List<ShootingStarTrackingData> starData)
+	{
+		if (starData.isEmpty()) {
+			return;
+		}
+
+		for (Component component : listContainer.getComponents()) {
+			ShootingStarTrackingTableRow r = (ShootingStarTrackingTableRow) component;
+			r.updateTime();
+		}
+
+		listContainer.repaint();
+	}
+
     private JPopupMenu buildRemoveMenu(ShootingStarTrackingData star)
     {
         JPopupMenu popupMenu = new JPopupMenu();
@@ -296,7 +311,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 		return panel;
 	}
 
-    private enum Order
+	private enum Order
     {
         WORLD,
         LOCATION,

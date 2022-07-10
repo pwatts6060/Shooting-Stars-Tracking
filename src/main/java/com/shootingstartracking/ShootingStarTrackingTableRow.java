@@ -31,6 +31,8 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
     private final boolean displayAsMinutes;
 
+    private JLabel timeField;
+
 	ShootingStarTrackingTableRow(ShootingStarTrackingData starData, boolean displayAsMinutes, Color backgroundColor, int world)
     {
         this.starData = starData;
@@ -114,20 +116,31 @@ public class ShootingStarTrackingTableRow extends JPanel {
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
-        String time;
-        if (displayAsMinutes) {
-            long timeDelta = TimeUnit.MILLISECONDS.toMinutes(starData.getTime() - Instant.now().toEpochMilli());
-            time = timeDelta + " mins";
-        } else {
-            Instant instant = Instant.ofEpochMilli(starData.getTime());
-            time = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(dtf);
-        }
-        JLabel timeField = new JLabel(time);
-        timeField.setFont(FontManager.getRunescapeSmallFont());
-		timeField.setForeground(getTimeColor(starData));
+        timeField = new JLabel();
+		timeField.setFont(FontManager.getRunescapeSmallFont());
+        updateTime();
         panel.add(timeField);
         return panel;
     }
+
+    void updateTime() {
+		String time;
+		if (displayAsMinutes) {
+			time = convertTime(starData.getTime());
+		} else {
+			Instant instant = Instant.ofEpochMilli(starData.getTime());
+			time = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(dtf);
+		}
+		timeField.setText(time);
+		timeField.setForeground(getTimeColor(starData));
+	}
+
+    public static String convertTime(long epoch) {
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(epoch - Instant.now().toEpochMilli());
+		long minutes = seconds / 60;
+		seconds %= 60;
+		return String.format("%d:%02d", minutes, Math.abs(seconds));
+	}
 
     private Color getTimeColor(ShootingStarTrackingData starData) {
 		if (starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli())

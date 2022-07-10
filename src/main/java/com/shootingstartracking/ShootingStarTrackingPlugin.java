@@ -57,9 +57,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 	private static final int TELESCOPE_WIDGET_ID = 229;
 	private static final ZoneId utcZoneId = ZoneId.of("UTC");
 
-	private static final Pattern minutesPattern = Pattern.compile("(\\d+) (?:minutes?|to)");
-	private static final Pattern hoursPattern = Pattern.compile("(\\d+) hours?");
-	private static final Pattern minutesThenHoursPattern = Pattern.compile("next (\\d)+ minutes to (\\d) hours?");
+	private static final Pattern minutesThenHoursPattern = Pattern.compile(".* next (\\d+) minutes to (\\d+) hours? (\\d+) .*");
+	private static final Pattern minutesPattern = Pattern.compile(".* (\\d+) to (\\d+) .*");
+	private static final Pattern hoursPattern = Pattern.compile(".* next (\\d+) hours? (\\d+) minutes? to (\\d+) hours? (\\d+) .*");
 
 	@Inject
 	private Client client;
@@ -124,7 +124,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 		if (widget == null) {
 			return;
 		}
-		ZonedDateTime time = ZonedDateTime.now(utcZoneId);
+		ZonedDateTime minTime = ZonedDateTime.now(utcZoneId);
 		String widgetText;
 
 		try{
@@ -132,27 +132,53 @@ public class ShootingStarTrackingPlugin extends Plugin
 		} catch (NullPointerException e) {
 			return;
 		}
-		Optional<ShootingStarLocations> match = Arrays.stream(ShootingStarLocations.values)
+		Optional<ShootingStarLocations> locationOp = Arrays.stream(ShootingStarLocations.values)
 			.filter(o -> widgetText.contains(o.getLocation()))
 			.findAny();
-		if (!match.isPresent())
+		if (!locationOp.isPresent())
 		{
 			log.debug("No match found");
 			return;
 		}
 
-		Matcher matcher = minutesPattern.matcher(widgetText);
-		if (matcher.find())
-		{
-			time = time.plusMinutes(Integer.parseInt(matcher.group(1)));
+		int[] minutesInterval = minutesInterval(widgetText);
+		if (minutesInterval == null) {
+			return;
 		}
-		matcher = hoursPattern.matcher(widgetText);
-		if (matcher.find() && !minutesThenHoursPattern.matcher(widgetText).find())
-		{
-			time = time.plusHours(Integer.parseInt(matcher.group(1)));
-		}
-		addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),time.toInstant().toEpochMilli()));
+		ZonedDateTime maxTime = minTime.plusMinutes(minutesInterval[1]);
+		minTime = minTime.plusMinutes(minutesInterval[0]);
+
+		ShootingStarTrackingData data = new ShootingStarTrackingData(client.getWorld(), locationOp.get(), minTime.toInstant().toEpochMilli());
+		addToList(data);
 		SwingUtilities.invokeLater(() -> panel.updateList(starData));
+	}
+
+	private int[] minutesInterval(String widgetText) {
+
+		Matcher m = minutesThenHoursPattern.matcher(widgetText);
+		if (m.find())
+		{
+			int minTime = Integer.parseInt(m.group(1));
+			int maxTime = 60 * Integer.parseInt(m.group(2)) + Integer.parseInt(m.group(3));
+			return new int[]{minTime, maxTime};
+		}
+
+		m = hoursPattern.matcher(widgetText);
+		if (m.find())
+		{
+			int minTime = 60 * Integer.parseInt(m.group(1)) + Integer.parseInt(m.group(2));
+			int maxTime = 60 * Integer.parseInt(m.group(3)) + Integer.parseInt(m.group(4));
+			return new int[]{minTime, maxTime};
+		}
+
+		m = minutesPattern.matcher(widgetText);
+		if (m.find())
+		{
+			int minTime = Integer.parseInt(m.group(1));
+			int maxTime = Integer.parseInt(m.group(2));
+			return new int[]{minTime, maxTime};
+		}
+		return null;
 	}
 
 	private void addToList(ShootingStarTrackingData data)
@@ -168,21 +194,29 @@ public class ShootingStarTrackingPlugin extends Plugin
 	}
 
 	@Schedule(
-			period = 20,
+			period = 5,
 			unit = ChronoUnit.SECONDS
 	)
 	public void checkDepletedStars()
 	{
 		List<ShootingStarTrackingData> stars = new ArrayList<>(starData);
 		ZonedDateTime now = ZonedDateTime.now(utcZoneId);
+		int removeTime = config.timeTillRemoveConfig();
+		boolean removed = false;
 
 		for (ShootingStarTrackingData star : starData) {
-			if (star.getTime() < now.minusMinutes(config.timeTillRemoveConfig()).toInstant().toEpochMilli()) {
+			if (star.getTime() < now.minusMinutes(removeTime).toInstant().toEpochMilli()) {
 				stars.remove(star);
+				removed = true;
 			}
 		}
-		starData = stars;
-		SwingUtilities.invokeLater(() -> panel.updateList(starData));
+
+		if (removed) {
+			starData = stars;
+			SwingUtilities.invokeLater(() -> panel.updateList(starData));
+		} else {
+			SwingUtilities.invokeLater(() -> panel.updateTimes(starData));
+		}
 	}
 
 	@Override
