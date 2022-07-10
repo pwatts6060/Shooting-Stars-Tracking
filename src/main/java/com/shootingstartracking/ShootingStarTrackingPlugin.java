@@ -256,6 +256,22 @@ public class ShootingStarTrackingPlugin extends Plugin
 		sendChatMessage("Star data exported to clipboard.");
 	}
 
+	public void discordFormat() {
+		StringBuilder sb = new StringBuilder();
+		for (ShootingStarTrackingData star : starData) {
+			sb.append(star.getWorld())
+				.append(" ")
+				.append(star.getLocation())
+				.append(" ")
+				.append("<t:")
+				.append(star.getTime() / 1000)
+				.append(":R>")
+				.append("\n");
+		}
+		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(sb.toString()), null);
+		sendChatMessage("Star data exported to clipboard in discord format.");
+	}
+
 	public void hopTo(ShootingStarTrackingData star)
 	{
 		worldHop.hop(star.getWorld());

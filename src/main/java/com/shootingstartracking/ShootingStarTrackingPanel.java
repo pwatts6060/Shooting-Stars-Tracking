@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -42,8 +44,13 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         add(header);
         add(listContainer);
         JPanel buttons = new JPanel();
-        buttons.add(importPanel(), BorderLayout.WEST);
-        buttons.add(exportPanel(),BorderLayout.EAST);
+        buttons.setBorder(new EmptyBorder(5, 5, 5, 5));
+        buttons.setLayout(new BoxLayout(buttons, BoxLayout.Y_AXIS));
+        buttons.add(importPanel());
+		buttons.add(Box.createRigidArea(new Dimension(0, 5)));
+        buttons.add(exportPanel());
+		buttons.add(Box.createRigidArea(new Dimension(0, 5)));
+        buttons.add(discordPanel());
         add(buttons);
     }
 
@@ -256,6 +263,35 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         panel.add(label);
         return panel;
     }
+
+	private JPanel discordPanel()
+	{
+		JPanel panel = new JPanel();
+		JLabel label = new JLabel("Copy for Discord format");
+		panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		panel.setPreferredSize(new Dimension(60,30));
+		panel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (!SwingUtilities.isRightMouseButton(e))
+				{
+					plugin.discordFormat();
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				panel.setBackground(ColorScheme.DARKER_GRAY_HOVER_COLOR);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+			}
+		});
+		panel.add(label);
+		return panel;
+	}
 
     private enum Order
     {
