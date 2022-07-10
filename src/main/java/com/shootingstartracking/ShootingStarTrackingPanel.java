@@ -35,7 +35,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
 	static final int WORLD_WIDTH = 35;
 	static final int LOCATION_WIDTH = 60;
-	static final int TIME_WIDTH = 45;
+	static final int TIME_WIDTH = 47;
 
     private ShootingStarTrackingTableHeader worldHeader;
     private ShootingStarTrackingTableHeader locationHeader;
