@@ -207,6 +207,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 			return;
 		}
 		starData.remove(oldStar);
+		starData.add(data);
 	}
 
 	private void save()
