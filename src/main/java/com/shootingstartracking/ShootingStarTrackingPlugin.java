@@ -133,7 +133,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 			.findAny();
 		if (!match.isPresent())
 		{
-			log.info("No match found");
+			log.debug("No match found");
 			return;
 		}
 		Pattern minutesPattern = Pattern.compile("(\\d+) (?:minutes?|to)");
