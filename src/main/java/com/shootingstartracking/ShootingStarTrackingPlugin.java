@@ -6,6 +6,9 @@ import com.google.gson.JsonSyntaxException;
 import com.google.inject.Provides;
 import com.shootingstartracking.ShootingStarTrackingData.ShootingStarLocations;
 import java.awt.Toolkit;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import javax.swing.SwingUtilities;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +21,7 @@ import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
+import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
@@ -55,6 +59,7 @@ import java.util.regex.Pattern;
 )
 public class ShootingStarTrackingPlugin extends Plugin
 {
+	private static final File SAVE_FILE = new File(RuneLite.RUNELITE_DIR, "shooting-star-tracking.json");
 	private static final int TELESCOPE_WIDGET_ID = 229;
 	private static final ZoneId utcZoneId = ZoneId.of("UTC");
 
@@ -154,6 +159,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 		ShootingStarTrackingData data = new ShootingStarTrackingData(client.getWorld(), locationOp.get(), minTime.toInstant().toEpochMilli(), maxTime.toInstant().toEpochMilli());
 		addToList(data);
+		save();
 		SwingUtilities.invokeLater(() -> panel.updateList(starData));
 	}
 
@@ -187,14 +193,33 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	private void addToList(ShootingStarTrackingData data)
 	{
-		ShootingStarTrackingData oldStar = starData.stream().filter(star -> data.getWorld() == star.getWorld()).findFirst().orElse(null);
-		if (oldStar != null) {
-			if (data.getMinTime() < oldStar.getMinTime()) {
-				return;
-			}
-			starData.remove(oldStar);
+		ShootingStarTrackingData oldStar = starData.stream()
+			.filter(star -> data.getWorld() == star.getWorld())
+			.findFirst()
+			.orElse(null);
+
+		if (oldStar == null) {
+			starData.add(data);
+			return;
 		}
-		starData.add(data);
+
+		if (data.getMinTime() <= oldStar.getMinTime()) {
+			return;
+		}
+		starData.remove(oldStar);
+	}
+
+	private void save()
+	{
+		String json = new Gson().toJson(starData);
+		try
+		{
+			Files.write(SAVE_FILE.toPath(), json.getBytes(StandardCharsets.UTF_8));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	@Schedule(
@@ -259,7 +284,25 @@ public class ShootingStarTrackingPlugin extends Plugin
 				.priority(7)
 				.build();
 		clientToolbar.addNavigation(navButton);
+		try
+		{
+			String data = new String(Files.readAllBytes(SAVE_FILE.toPath()));
+			load(data);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 		panel.updateList(starData);
+	}
+
+	private void load(String data)
+	{
+		JsonArray json = new Gson().fromJson(data, JsonArray.class);
+		json.forEach((star) -> {
+			ShootingStarTrackingData parsedStar = new Gson().fromJson(star, ShootingStarTrackingData.class);
+			addToList(parsedStar);
+		});
 	}
 
 	@Override
@@ -279,16 +322,13 @@ public class ShootingStarTrackingPlugin extends Plugin
 	{
 		try {
 			final String clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().trim();
-			JsonArray json = new Gson().fromJson(clipboard, JsonArray.class);
-			json.forEach((star) -> {
-				ShootingStarTrackingData parsedStar = new Gson().fromJson(star, ShootingStarTrackingData.class);
-				addToList(parsedStar);
-			});
+			load(clipboard);
 		} catch (IOException | UnsupportedFlavorException | JsonSyntaxException er) {
 			sendChatMessage("Error importing star data.");
 			return;
 		}
 		sendChatMessage("Imported star data.");
+		save();
 		panel.updateList(starData);
 	}
 
