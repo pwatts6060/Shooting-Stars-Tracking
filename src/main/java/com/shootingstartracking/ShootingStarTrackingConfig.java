@@ -22,5 +22,5 @@ public interface ShootingStarTrackingConfig extends Config
             name = "Show minutes remaining",
             description = "Show the minutes remaining rather than the expected time"
     )
-    default boolean displayAsMinutes() {return false;}
+    default boolean displayAsMinutes() {return true;}
 }
