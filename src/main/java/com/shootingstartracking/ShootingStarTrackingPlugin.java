@@ -57,6 +57,10 @@ public class ShootingStarTrackingPlugin extends Plugin
 	private static final int TELESCOPE_WIDGET_ID = 229;
 	private static final ZoneId utcZoneId = ZoneId.of("UTC");
 
+	private static final Pattern minutesPattern = Pattern.compile("(\\d+) (?:minutes?|to)");
+	private static final Pattern hoursPattern = Pattern.compile("(\\d+) hours?");
+	private static final Pattern minutesThenHoursPattern = Pattern.compile("next (\\d)+ minutes to (\\d) hours?");
+
 	@Inject
 	private Client client;
 
@@ -136,9 +140,6 @@ public class ShootingStarTrackingPlugin extends Plugin
 			log.debug("No match found");
 			return;
 		}
-		Pattern minutesPattern = Pattern.compile("(\\d+) (?:minutes?|to)");
-		Pattern hoursPattern = Pattern.compile("(\\d+) hours?");
-		Pattern minutesThenHoursPattern = Pattern.compile("next (\\d)+ minutes to (\\d) hours?");
 
 		Matcher matcher = minutesPattern.matcher(widgetText);
 		if (matcher.find())
@@ -146,12 +147,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 			time = time.plusMinutes(Integer.parseInt(matcher.group(1)));
 		}
 		matcher = hoursPattern.matcher(widgetText);
-		if (matcher.find())
+		if (matcher.find() && !minutesThenHoursPattern.matcher(widgetText).find())
 		{
-			if (!minutesThenHoursPattern.matcher(widgetText).find())
-			{
-				time = time.plusHours(Integer.parseInt(matcher.group(1)));
-			}
+			time = time.plusHours(Integer.parseInt(matcher.group(1)));
 		}
 		addToList(new ShootingStarTrackingData(client.getWorld(),match.get(),time.toInstant().toEpochMilli()));
 		SwingUtilities.invokeLater(() -> panel.updateList(starData));
