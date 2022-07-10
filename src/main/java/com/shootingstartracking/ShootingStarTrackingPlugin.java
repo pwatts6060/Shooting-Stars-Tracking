@@ -312,6 +312,10 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	public void exportData()
 	{
+		if (starData.isEmpty()) {
+			sendChatMessage("No data to export.");
+			return;
+		}
 		String json = new Gson().toJson(starData);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
 		sendChatMessage("Star data exported to clipboard.");
