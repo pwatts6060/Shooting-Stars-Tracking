@@ -3,15 +3,14 @@ package com.shootingstartracking;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import javax.inject.Inject;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import lombok.Getter;
+import net.runelite.client.ui.ColorScheme;
 import static net.runelite.client.ui.ColorScheme.BRAND_ORANGE;
 import static net.runelite.client.ui.ColorScheme.LIGHT_GRAY_COLOR;
-import static net.runelite.client.ui.ColorScheme.MEDIUM_GRAY_COLOR;
 import net.runelite.client.ui.FontManager;
 
 import javax.swing.border.EmptyBorder;
@@ -28,6 +27,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
 
 	private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
 	private static final ZoneId utcZoneId = ZoneId.of("UTC");
+	private static final Color COLOR_NEGATIVE = new Color(255, 80, 80);
 
     @Getter
     private final ShootingStarTrackingData starData;
@@ -115,9 +115,8 @@ public class ShootingStarTrackingTableRow extends JPanel {
 	private Color worldColor(int curWorld) {
 		if (starData.getWorld() == curWorld) {
 			return BRAND_ORANGE;
-		} else {
-			return getTimeColor(starData);
 		}
+		return LIGHT_GRAY_COLOR;
 	}
 
     private JPanel buildLocationField()
@@ -126,12 +125,27 @@ public class ShootingStarTrackingTableRow extends JPanel {
         panel.setBorder(new EmptyBorder(0,5,0,5));
         JLabel locationField = new JLabel(starData.getLocation().getShortLocation());
         locationField.setFont(FontManager.getRunescapeSmallFont());
-        locationField.setForeground(getTimeColor(starData));
+        locationField.setForeground(getLocationColor());
         panel.add(locationField,BorderLayout.CENTER);
         return panel;
     }
 
-    private JPanel buildTimeField()
+	private Color getLocationColor()
+	{
+		long time = ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli();
+		boolean minimumPassed = time > starData.getMinTime();
+		boolean maximumPassed = time > starData.getMaxTime();
+		if (maximumPassed && minimumPassed)
+		{
+			return ColorScheme.PROGRESS_COMPLETE_COLOR;
+		}
+		if (minimumPassed) {
+			return Color.YELLOW;
+		}
+		return LIGHT_GRAY_COLOR;
+	}
+
+	private JPanel buildTimeField()
     {
         JPanel panel = new JPanel(new BorderLayout(7,0));
         panel.setBorder(new EmptyBorder(0,5,0,5));
@@ -160,9 +174,8 @@ public class ShootingStarTrackingTableRow extends JPanel {
 		minTimeField.setText(minTime);
 		maxTimeField.setText(maxTime);
 
-		Color color = getTimeColor(starData);
-		minTimeField.setForeground(color);
-		maxTimeField.setForeground(color);
+		minTimeField.setForeground(getTimeColor(starData.getMinTime()));
+		maxTimeField.setForeground(getTimeColor(starData.getMaxTime()));
 	}
 
     public static String convertTime(long epoch) {
@@ -180,12 +193,12 @@ public class ShootingStarTrackingTableRow extends JPanel {
 		return time;
 	}
 
-    private Color getTimeColor(ShootingStarTrackingData starData) {
-		if (starData.getMinTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli())
+    private Color getTimeColor(long time) {
+		if (time > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli())
 		{
 			return LIGHT_GRAY_COLOR;
 		}
-		return MEDIUM_GRAY_COLOR;
+		return COLOR_NEGATIVE;
 	}
 
 	public void updateNotifyBorder()
