@@ -156,6 +156,8 @@ public class ShootingStarTrackingPanel extends PluginPanel {
                                 row.getLocation().getLocation());
                     case MIN_TIME:
                         return getCompareValue(r1, r2, ShootingStarTrackingData::getMinTime);
+					case MAX_TIME:
+						return getCompareValue(r1, r2, ShootingStarTrackingData::getMaxTime);
                     default:
                         return 0;
                 }
