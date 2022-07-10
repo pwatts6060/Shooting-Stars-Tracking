@@ -172,7 +172,11 @@ public class ShootingStarTrackingTableRow extends JPanel {
 		String time = negative ? "-" : "";
 		long minutes = seconds / 60;
 		seconds %= 60;
-		time += String.format("%d:%02d", minutes, seconds);
+		if (minutes >= 100) {
+			time += minutes + "m";
+		} else {
+			time += String.format("%d:%02d", minutes, seconds);
+		}
 		return time;
 	}
 
