@@ -203,11 +203,22 @@ public class ShootingStarTrackingPlugin extends Plugin
 			return;
 		}
 
-		if (data.getMinTime() <= oldStar.getMinTime()) {
+		if (data.getMaxTime() < oldStar.getMinTime()) {
+			// data imported is an older star
 			return;
 		}
 		starData.remove(oldStar);
-		starData.add(data);
+
+		if (!data.getLocation().equals(oldStar.getLocation())) {
+			starData.add(data);
+			return;
+		}
+
+		long minTime = Math.max(oldStar.getMinTime(), data.getMinTime());
+		long maxTime = Math.min(oldStar.getMaxTime(), data.getMaxTime());
+		ShootingStarTrackingData newStar = new ShootingStarTrackingData(data.getWorld(), data.getLocation(), minTime, maxTime);
+		newStar.setNotify(oldStar.isNotify());
+		starData.add(newStar);
 	}
 
 	private void save()
