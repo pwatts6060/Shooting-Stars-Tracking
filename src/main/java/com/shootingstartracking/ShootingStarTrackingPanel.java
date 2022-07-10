@@ -122,7 +122,6 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 				orderBy(Order.MAX_TIME);
 			}
 		});
-		maxTimeHeader.highlight(true,ascendingOrder);
 
 		timePanel.add(minTimeHeader, BorderLayout.WEST);
 		timePanel.add(maxTimeHeader, BorderLayout.EAST);
