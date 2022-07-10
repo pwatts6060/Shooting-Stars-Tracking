@@ -17,6 +17,7 @@ import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.WidgetLoaded;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
@@ -78,6 +79,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	@Inject
 	private WorldHop worldHop;
+
+	@Inject
+	private Notifier notifier;
 
 	private ShootingStarTrackingPanel panel;
 
@@ -202,21 +206,44 @@ public class ShootingStarTrackingPlugin extends Plugin
 		List<ShootingStarTrackingData> stars = new ArrayList<>(starData);
 		ZonedDateTime now = ZonedDateTime.now(utcZoneId);
 		int removeTime = config.timeTillRemoveConfig();
-		boolean removed = false;
+		boolean fullUpdate = false;
 
 		for (ShootingStarTrackingData star : starData) {
+			if (checkNotification(star, now)) {
+				fullUpdate = true;
+			}
 			if (star.getMinTime() < now.minusMinutes(removeTime).toInstant().toEpochMilli()) {
 				stars.remove(star);
-				removed = true;
+				fullUpdate = true;
 			}
 		}
 
-		if (removed) {
+		if (fullUpdate) {
 			starData = stars;
 			SwingUtilities.invokeLater(() -> panel.updateList(starData));
 		} else {
 			SwingUtilities.invokeLater(() -> panel.updateTimes(starData));
 		}
+	}
+
+	private boolean checkNotification(ShootingStarTrackingData star, ZonedDateTime now) {
+		if (!star.isNotify()) {
+			return false;
+		}
+		long time = star.getMinTime() + config.notifyPercentage() * (star.getMaxTime() - star.getMinTime()) / 100;
+		if (time < now.toInstant().toEpochMilli()) {
+			star.setNotify(false);
+			String msg = "Star W" + star.getWorld() + " " + star.getLocation().getShortLocation();
+			NotifyType type = config.notifyType();
+			if (type == NotifyType.BOTH || type == NotifyType.NOTIFICATION) {
+				notifier.notify(msg);
+			}
+			if (type == NotifyType.BOTH || type == NotifyType.CHAT_MESSAGE) {
+				sendChatMessage(msg);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override

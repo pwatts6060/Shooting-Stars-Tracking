@@ -1,6 +1,7 @@
 package com.shootingstartracking;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public class ShootingStarTrackingData {
 
@@ -12,6 +13,9 @@ public class ShootingStarTrackingData {
     private final long minTime;
 	@Getter
 	private final long maxTime;
+	@Getter
+	@Setter
+	private transient boolean notify;
 
     public ShootingStarTrackingData(int world, ShootingStarLocations location, long minTime, long maxTime)
     {

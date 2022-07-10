@@ -6,6 +6,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -26,6 +28,10 @@ import java.util.function.Function;
 
 public class ShootingStarTrackingPanel extends PluginPanel {
 
+	private static final ZoneId utcZoneId = ZoneId.of("UTC");
+	private static final String ADD_NOTIFICATION = "Add notification";
+	private static final String REMOVE_NOTIFICATION = "Remove notification";
+
 	static final int WORLD_WIDTH = 35;
 	static final int LOCATION_WIDTH = 60;
 	static final int TIME_WIDTH = 45;
@@ -39,9 +45,10 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 
     private final ShootingStarTrackingPlugin plugin;
     private Order orderIndex = Order.MIN_TIME;
-    private boolean ascendingOrder = false;
+	private boolean ascendingOrder = false;
 
-    ShootingStarTrackingPanel(ShootingStarTrackingPlugin plugin) {
+
+	ShootingStarTrackingPanel(ShootingStarTrackingPlugin plugin) {
         this.plugin = plugin;
         setBorder(null);
         setLayout(new DynamicGridLayout(0, 1));
@@ -159,7 +166,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
             for (ShootingStarTrackingData data : starData) {
                 Color backgroundColor = i % 2 == 0 ? ColorScheme.DARK_GRAY_COLOR : ColorScheme.DARKER_GRAY_COLOR;
                 ShootingStarTrackingTableRow r = new ShootingStarTrackingTableRow(data, plugin.isDisplayAsMinutes(), backgroundColor, plugin.getWorld());
-                r.setComponentPopupMenu(buildRemoveMenu(data));
+                r.setComponentPopupMenu(buildRemoveMenu(r, data));
                 r.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseClicked(MouseEvent e) {
@@ -192,7 +199,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 		listContainer.repaint();
 	}
 
-    private JPopupMenu buildRemoveMenu(ShootingStarTrackingData star)
+    private JPopupMenu buildRemoveMenu(ShootingStarTrackingTableRow row, ShootingStarTrackingData star)
     {
         JPopupMenu popupMenu = new JPopupMenu();
         popupMenu.setBorder(new EmptyBorder(5,5,5,5));
@@ -208,6 +215,27 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         removeEntryOption.setFont(FontManager.getRunescapeSmallFont());
         removeEntryOption.addActionListener(e -> plugin.removeStar(star));
         popupMenu.add(removeEntryOption);
+
+        if (ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli() < star.getMaxTime()) {
+			JMenuItem notifyOption = new JMenuItem();
+			if (star.isNotify()) {
+				notifyOption.setText(REMOVE_NOTIFICATION);
+			} else {
+				notifyOption.setText(ADD_NOTIFICATION);
+			}
+			notifyOption.setFont(FontManager.getRunescapeSmallFont());
+			notifyOption.addActionListener(e -> {
+				if (star.isNotify()) {
+					notifyOption.setText(ADD_NOTIFICATION);
+				} else {
+					notifyOption.setText(REMOVE_NOTIFICATION);
+				}
+				star.setNotify(!star.isNotify());
+				row.updateNotifyBorder();
+				notifyOption.repaint();
+			});
+			popupMenu.add(notifyOption);
+		}
 
         return popupMenu;
     }

@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
 import lombok.Getter;
 import static net.runelite.client.ui.ColorScheme.BRAND_ORANGE;
 import static net.runelite.client.ui.ColorScheme.LIGHT_GRAY_COLOR;
@@ -39,7 +40,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
         this.starData = starData;
         this.displayAsMinutes = displayAsMinutes;
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(2,0,2,0));
+		updateNotifyBorder();
         setBackground(backgroundColor);
         addMouseListener(new MouseAdapter() {
             @Override
@@ -164,5 +165,13 @@ public class ShootingStarTrackingTableRow extends JPanel {
 			return LIGHT_GRAY_COLOR;
 		}
 		return MEDIUM_GRAY_COLOR;
+	}
+
+	public void updateNotifyBorder()
+	{
+		if (starData.isNotify())
+			setBorder(new LineBorder(BRAND_ORANGE, 1));
+		else
+			setBorder(new EmptyBorder(1,1,1,1));
 	}
 }

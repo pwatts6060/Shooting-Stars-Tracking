@@ -3,6 +3,7 @@ package com.shootingstartracking;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
+import net.runelite.client.config.Range;
 
 @ConfigGroup(ShootingStarTrackingConfig.configGroup)
 public interface ShootingStarTrackingConfig extends Config
@@ -23,4 +24,20 @@ public interface ShootingStarTrackingConfig extends Config
             description = "Show the minutes remaining rather than the expected time"
     )
     default boolean displayAsMinutes() {return true;}
+
+	@Range(
+		max = 100
+	)
+	@ConfigItem(
+		keyName = "notifyTime",
+		name = "Notify percentage",
+		description = "0% notifies when min time reached, 100% for max time")
+	default int notifyPercentage() {return 0;}
+
+	@ConfigItem(
+		keyName = "notifyType",
+		name = "Notification Type",
+		description = "Notification type for a star that you've added a notification to"
+	)
+	default NotifyType notifyType() {return NotifyType.BOTH;}
 }
