@@ -9,19 +9,22 @@ public class ShootingStarTrackingData {
     @Getter
     private final ShootingStarLocations location;
     @Getter
-    private final long time;
+    private final long minTime;
+	@Getter
+	private final long maxTime;
 
-    public ShootingStarTrackingData(int world, ShootingStarLocations location, long time)
+    public ShootingStarTrackingData(int world, ShootingStarLocations location, long minTime, long maxTime)
     {
         this.world = world;
         this.location = location;
-        this.time = time;
-    }
+        this.minTime = minTime;
+		this.maxTime = maxTime;
+	}
 
     @Override
     public String toString()
     {
-		return "world:" + world + " location:" + location + " time:" + time;
+		return "world:" + world + " location:" + location + " time:" + minTime + " - " + maxTime;
     }
 
     enum ShootingStarLocations {

@@ -148,7 +148,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 		ZonedDateTime maxTime = minTime.plusMinutes(minutesInterval[1]);
 		minTime = minTime.plusMinutes(minutesInterval[0]);
 
-		ShootingStarTrackingData data = new ShootingStarTrackingData(client.getWorld(), locationOp.get(), minTime.toInstant().toEpochMilli());
+		ShootingStarTrackingData data = new ShootingStarTrackingData(client.getWorld(), locationOp.get(), minTime.toInstant().toEpochMilli(), maxTime.toInstant().toEpochMilli());
 		addToList(data);
 		SwingUtilities.invokeLater(() -> panel.updateList(starData));
 	}
@@ -185,7 +185,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 	{
 		ShootingStarTrackingData oldStar = starData.stream().filter(star -> data.getWorld() == star.getWorld()).findFirst().orElse(null);
 		if (oldStar != null) {
-			if (data.getTime() < oldStar.getTime()) {
+			if (data.getMinTime() < oldStar.getMinTime()) {
 				return;
 			}
 			starData.remove(oldStar);
@@ -205,7 +205,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 		boolean removed = false;
 
 		for (ShootingStarTrackingData star : starData) {
-			if (star.getTime() < now.minusMinutes(removeTime).toInstant().toEpochMilli()) {
+			if (star.getMinTime() < now.minusMinutes(removeTime).toInstant().toEpochMilli()) {
 				stars.remove(star);
 				removed = true;
 			}
@@ -296,9 +296,13 @@ public class ShootingStarTrackingPlugin extends Plugin
 			sb.append(star.getWorld())
 				.append(" ")
 				.append(star.getLocation())
-				.append(" ")
+				.append(" between ")
 				.append("<t:")
-				.append(star.getTime() / 1000)
+				.append(star.getMinTime() / 1000)
+				.append(":R>")
+				.append(" and ")
+				.append("<t:")
+				.append(star.getMaxTime() / 1000)
 				.append(":R>")
 				.append("\n");
 		}

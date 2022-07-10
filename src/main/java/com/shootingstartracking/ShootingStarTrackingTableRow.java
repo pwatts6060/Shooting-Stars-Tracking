@@ -126,9 +126,9 @@ public class ShootingStarTrackingTableRow extends JPanel {
     void updateTime() {
 		String time;
 		if (displayAsMinutes) {
-			time = convertTime(starData.getTime());
+			time = convertTime(starData.getMinTime());
 		} else {
-			Instant instant = Instant.ofEpochMilli(starData.getTime());
+			Instant instant = Instant.ofEpochMilli(starData.getMinTime());
 			time = LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).format(dtf);
 		}
 		timeField.setText(time);
@@ -143,7 +143,7 @@ public class ShootingStarTrackingTableRow extends JPanel {
 	}
 
     private Color getTimeColor(ShootingStarTrackingData starData) {
-		if (starData.getTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli())
+		if (starData.getMinTime() > ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli())
 		{
 			return LIGHT_GRAY_COLOR;
 		}

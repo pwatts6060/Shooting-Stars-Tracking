@@ -129,7 +129,7 @@ public class ShootingStarTrackingPanel extends PluginPanel {
                         return getCompareValue(r1, r2, row ->
                                 row.getLocation().getLocation());
                     case TIME:
-                        return getCompareValue(r1, r2, ShootingStarTrackingData::getTime);
+                        return getCompareValue(r1, r2, ShootingStarTrackingData::getMinTime);
                     default:
                         return 0;
                 }
