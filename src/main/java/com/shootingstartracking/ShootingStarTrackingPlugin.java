@@ -293,14 +293,15 @@ public class ShootingStarTrackingPlugin extends Plugin
 	public void discordFormat() {
 		StringBuilder sb = new StringBuilder();
 		for (ShootingStarTrackingData star : starData) {
-			sb.append(star.getWorld())
-				.append(" ")
-				.append(star.getLocation())
-				.append(" between ")
+			sb.append("`")
+				.append(star.getWorld())
+				.append("` - `")
+				.append(star.getLocation().getShortLocation())
+				.append("` earliest: ")
 				.append("<t:")
 				.append(star.getMinTime() / 1000)
 				.append(":R>")
-				.append(" and ")
+				.append(" latest: ")
 				.append("<t:")
 				.append(star.getMaxTime() / 1000)
 				.append(":R>")
