@@ -329,6 +329,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 	{
 		starData.remove(star);
 		panel.updateList(starData);
+		save();
 	}
 
 	public void importData()
