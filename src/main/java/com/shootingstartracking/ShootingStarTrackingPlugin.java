@@ -9,6 +9,8 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.SwingUtilities;
 import lombok.Getter;
 import lombok.Setter;
@@ -420,5 +422,36 @@ public class ShootingStarTrackingPlugin extends Plugin
 			lastWorld = client.getWorld();
 			SwingUtilities.invokeLater(() -> panel.updateList(starData));
 		}
+	}
+
+	public void removeWorldsInClipboard()
+	{
+		try {
+			final String clipboard = Toolkit.getDefaultToolkit().getSystemClipboard().getData(DataFlavor.stringFlavor).toString().trim();
+			Matcher matcher = Pattern.compile("[wW]([3-5][0-9][0-9])").matcher(clipboard);
+			Set<Integer> worlds = new HashSet<>();
+			while (matcher.find()) {
+				try {
+					worlds.add(Integer.parseInt(matcher.group(1)));
+				} catch (NumberFormatException ignored) {
+
+				}
+			}
+			if (worlds.isEmpty()) {
+				sendChatMessage("No worlds in format w451 found in clipboard.");
+				return;
+			}
+			long timeNow = ZonedDateTime.now(utcZoneId).toInstant().toEpochMilli();
+			// don't remove stars if it's impossible for them to have landed already.
+			int sizeBefore = starData.size();
+			starData.removeIf(s -> timeNow >= s.getMinTime() && worlds.contains(s.getWorld()));
+			int sizeAfter = starData.size();
+			sendChatMessage("Removed " + (sizeBefore - sizeAfter) + " worlds.");
+		} catch (NumberFormatException | IOException | UnsupportedFlavorException | JsonSyntaxException er) {
+			sendChatMessage("Error encountered.");
+			return;
+		}
+		save();
+		panel.updateList(starData);
 	}
 }

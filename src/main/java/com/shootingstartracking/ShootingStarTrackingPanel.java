@@ -63,6 +63,8 @@ public class ShootingStarTrackingPanel extends PluginPanel {
         buttons.add(exportPanel());
 		buttons.add(Box.createRigidArea(new Dimension(0, 5)));
         buttons.add(discordPanel());
+		buttons.add(Box.createRigidArea(new Dimension(0, 5)));
+		buttons.add(removePanel());
         add(buttons);
     }
 
@@ -339,6 +341,35 @@ public class ShootingStarTrackingPanel extends PluginPanel {
 				if (!SwingUtilities.isRightMouseButton(e))
 				{
 					plugin.discordFormat();
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				panel.setBackground(ColorScheme.DARKER_GRAY_HOVER_COLOR);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+			}
+		});
+		panel.add(label);
+		return panel;
+	}
+
+	private JPanel removePanel()
+	{
+		JPanel panel = new JPanel();
+		JLabel label = new JLabel("Remove clipboard worlds");
+		panel.setBackground(ColorScheme.DARKER_GRAY_COLOR);
+		panel.setPreferredSize(new Dimension(60,30));
+		panel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (!SwingUtilities.isRightMouseButton(e))
+				{
+					plugin.removeWorldsInClipboard();
 				}
 			}
 
