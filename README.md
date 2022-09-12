@@ -3,6 +3,8 @@
 - Can sort by world, location, min time, or max time to landing.
 - Export the stars you have found to your clipboard and share with other people.
 - Import other's exported data by copying it to your clipboard and clicking 'Import'
+- Remove clipboard worlds button checks your clipboard for all occurences of wxxx, 
+e.g. w315 and removes them from your tracking list.
 - Double click a row or right click "Hop to" to hop to the world a star is on
 - Right click "Remove" on a row to remove the star
 - Right click "Add Notification" to get a notification for when the star lands.
