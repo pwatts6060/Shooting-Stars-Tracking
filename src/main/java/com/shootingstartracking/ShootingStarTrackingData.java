@@ -46,6 +46,7 @@ public class ShootingStarTrackingData {
         PISCATORIS("Piscatoris or the Gnome Stronghold", "Piscatoris / Gnome Stronghold"),
         TIRANNWN("Tirannwn"),
         WILDERNESS("Wilderness"),
+		VARLAMORE("Varlamore"),
         UNKNOWN("Unknown");
 
         public static final ShootingStarLocations[] values = ShootingStarLocations.values();

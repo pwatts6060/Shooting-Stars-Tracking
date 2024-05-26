@@ -10,7 +10,7 @@ repositories {
 	mavenCentral()
 }
 
-def runeLiteVersion = '1.8.32.4'
+def runeLiteVersion = 'latest.release'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
@@ -24,7 +24,7 @@ dependencies {
 }
 
 group = 'com.shootingstartracking'
-version = '1.0.2'
+version = '1.0.3'
 sourceCompatibility = '1.8'
 
 tasks.withType(JavaCompile) {
