@@ -91,6 +91,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 	@Inject
 	private Notifier notifier;
 
+	@Inject
+	private Gson gson;
+
 	private ShootingStarTrackingPanel panel;
 
 	private NavigationButton navButton;
@@ -229,7 +232,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	private void save()
 	{
-		String json = new Gson().toJson(starData);
+		String json = gson.toJson(starData);
 		try
 		{
 			Files.write(SAVE_FILE.toPath(), json.getBytes(StandardCharsets.UTF_8));
@@ -316,9 +319,9 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	private void load(String data)
 	{
-		JsonArray json = new Gson().fromJson(data, JsonArray.class);
+		JsonArray json = gson.fromJson(data, JsonArray.class);
 		json.forEach((star) -> {
-			ShootingStarTrackingData parsedStar = new Gson().fromJson(star, ShootingStarTrackingData.class);
+			ShootingStarTrackingData parsedStar = gson.fromJson(star, ShootingStarTrackingData.class);
 			addToList(parsedStar);
 		});
 	}
@@ -375,7 +378,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 			sendChatMessage("No data to export.");
 			return;
 		}
-		String json = new Gson().toJson(starData);
+		String json = gson.toJson(starData);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(json), null);
 		sendChatMessage("Star data exported to clipboard.");
 	}
