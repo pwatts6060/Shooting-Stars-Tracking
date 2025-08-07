@@ -18,10 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
+import net.runelite.api.events.ChatMessage;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
-import net.runelite.api.events.WidgetLoaded;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.RuneLite;
 import net.runelite.client.callback.ClientThread;
@@ -62,7 +61,6 @@ import java.util.regex.Pattern;
 public class ShootingStarTrackingPlugin extends Plugin
 {
 	private static final File SAVE_FILE = new File(RuneLite.RUNELITE_DIR, "shooting-star-tracking.json");
-	private static final int TELESCOPE_WIDGET_ID = 229;
 	private static final ZoneId utcZoneId = ZoneId.of("UTC");
 
 	private static final Pattern minutesThenHoursPattern = Pattern.compile(".* next (\\d+) minutes to (\\d+) hours? (\\d+) .*");
@@ -107,12 +105,18 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	private int lastWorld;
 
-	@Subscribe
-	public void onWidgetLoaded(WidgetLoaded widgetLoaded) {
-		if (widgetLoaded.getGroupId() == TELESCOPE_WIDGET_ID) {
-			clientThread.invokeLater(this::extractStarInformation);
-		}
-	}
+    @Subscribe
+    public void onChatMessage(ChatMessage event)
+    {
+        if (event.getType() != ChatMessageType.MESBOX) {
+            return;
+        }
+
+        final String message = event.getMessage();
+        if (message.startsWith("You see a shooting star!")) {
+            clientThread.invokeLater(() -> extractStarInformation(message));
+        }
+    }
 
 	@Subscribe
 	public void onConfigChanged(final ConfigChanged event)
@@ -133,22 +137,11 @@ public class ShootingStarTrackingPlugin extends Plugin
 		return configManager.getConfig(ShootingStarTrackingConfig.class);
 	}
 
-	private void extractStarInformation()
+	private void extractStarInformation(final String message)
 	{
-		final Widget widget = client.getWidget(TELESCOPE_WIDGET_ID,1);
-		if (widget == null) {
-			return;
-		}
 		ZonedDateTime minTime = ZonedDateTime.now(utcZoneId);
-		String widgetText;
-
-		try{
-			widgetText = widget.getText().replace("<br>"," ");
-		} catch (NullPointerException e) {
-			return;
-		}
 		Optional<ShootingStarLocations> locationOp = Arrays.stream(ShootingStarLocations.values)
-			.filter(o -> widgetText.contains(o.getLocation()))
+			.filter(o -> message.contains(o.getLocation()))
 			.findAny();
 		if (!locationOp.isPresent())
 		{
@@ -156,7 +149,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 			return;
 		}
 
-		int[] minutesInterval = minutesInterval(widgetText);
+		int[] minutesInterval = minutesInterval(message);
 		if (minutesInterval == null) {
 			return;
 		}
