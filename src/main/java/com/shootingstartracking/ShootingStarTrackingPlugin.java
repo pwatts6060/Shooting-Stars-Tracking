@@ -135,7 +135,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 
 	private void extractStarInformation()
 	{
-		final Widget widget = client.getWidget(TELESCOPE_WIDGET_ID,1);
+		final Widget widget = client.getWidget(TELESCOPE_WIDGET_ID,3);
 		if (widget == null) {
 			return;
 		}
