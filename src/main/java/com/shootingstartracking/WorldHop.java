@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
-import net.runelite.api.widgets.InterfaceID;
+import net.runelite.api.gameval.InterfaceID;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.chat.ChatColorType;
 import net.runelite.client.chat.ChatMessageBuilder;
@@ -83,7 +83,7 @@ public class WorldHop
 			return;
 		}
 
-		if (client.getWidget(InterfaceID.WORLD_SWITCHER) == null)
+		if (client.getWidget(InterfaceID.WORLDSWITCHER, 0) == null)
 		{
 			client.openWorldHopper();
 
