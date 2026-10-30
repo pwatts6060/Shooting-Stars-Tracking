@@ -239,7 +239,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			log.error("Failed to save star data to file: {}", SAVE_FILE.getAbsolutePath(), e);
 		}
 	}
 
@@ -312,7 +312,7 @@ public class ShootingStarTrackingPlugin extends Plugin
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			log.error("Failed to load star data from file: {}", SAVE_FILE.getAbsolutePath(), e);
 		}
 		panel.updateList(starData);
 	}
